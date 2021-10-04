@@ -1,7 +1,5 @@
 <template>
-  <v-form
-    ref="form"
-  >
+  <v-form>
     <v-card class="elevation-12">
       <v-toolbar dark color="primary">
         <v-toolbar-title>Login</v-toolbar-title>
@@ -10,13 +8,13 @@
         <v-text-field
           prepend-icon="mdi-account"
           name="login"
-          label="Username or e-mail"
+          label="E-mail"
           type="text"
           required
-          v-model="user.username"
-          :error-messages="usernameErrors"
-          @input="$v.user.username.$touch()"
-          @blur="$v.user.username.$touch()"
+          v-model="user.email"
+          :error-messages="emailErrors"
+          @input="$v.user.email.$touch()"
+          @blur="$v.user.email.$touch()"
         ></v-text-field>
         <v-text-field
           prepend-icon="mdi-lock"
@@ -41,11 +39,10 @@
         <router-link to="/forget-password" class="float-left mt-3 ml-3 text-body-2">Forget password?</router-link>
         <v-btn
           color="primary"
-          @click="loginAttempt"
+          class="mr-2 mt-3 mb-2"
           :disabled="$v.$invalid || !valid"
           :loading="loading"
-          ref="submitButton"
-          class="mr-2 mt-3 mb-2"
+          @click="loginAttempt"
         >
           Login
           <template v-slot:loader>
@@ -61,7 +58,7 @@
         transition="scale-transition"
         style="margin-top: 20px; position: absolute; width:100%;"
       >
-        {{ this['auth/errors'].message }}
+        {{ this.error.message }}
       </v-alert>
     </v-card>
   </v-form>
@@ -70,31 +67,34 @@
 <script>
   import { mapGetters } from "vuex";
   import { validationMixin } from 'vuelidate'
-  import { required, maxLength, minLength, } from 'vuelidate/lib/validators'
+  import { required, maxLength, minLength, email, } from 'vuelidate/lib/validators'
   export default {
     name: 'Login',
     mixins: [validationMixin],
     validations: {
       user: {
-        username: { required, minLength: minLength(3) , maxLength: maxLength(20) },
-        password: { required, minLength: minLength(3) , maxLength: maxLength(20) },
+        email: { required, minLength: minLength(6), maxLength: maxLength(30), email },
+        password: { required, minLength: minLength(6), maxLength: maxLength(20) },
       }
     },
+
     data: () => ({
       user: {
-        username: null,
-        password: null,
+        email: "admin@sariaslan.com",
+        password: "123456",
         rememberMe: false,
       },
       errors: [],
+      error: {},
       submitStatus: '',
       valid: true,
       loader: null,
       loading: false,
       alert: false,
     }),
+
     methods: {
-      loginAttempt() {
+      async loginAttempt() {
         this.valid = false
         this.alert = false
         this.$v.$touch()
@@ -103,39 +103,44 @@
         } else {
           this.loader = 'loading';
           this.submitStatus = 'PENDING'
-          setTimeout(() => {
-            this.valid = true
-            this.$store.dispatch('auth/login', this.user)
-            .then(uri => {
-              this.$router.push(uri)
-            })
-            .catch(err => {
-              this.$store.dispatch('auth/pushError', err)
-              this.alert = true
-            })
-          }, 500)
+          this.valid = true
+          this.$store.dispatch('auth/login', this.user)
+          .then(uri => {
+            this.$router.push(uri)
+          })
+          .catch(err => {
+            console.log(err.response.data.message)
+            this.error = {
+              status: err.response.status,
+              message: err.response.data.message
+            }
+            this.alert = true
+          })
         }
       }
     },
+
     computed: {
       ...mapGetters(['auth/login', 'auth/errors']),
-      usernameErrors () {
+      emailErrors () {
         const errors = []
-        if (!this.$v.user.username.$dirty) return errors
-        !this.$v.user.username.minLength && errors.push('Username must be minimum 3 characters long')
-        !this.$v.user.username.maxLength && errors.push('Username must be at most 20 characters long')
-        !this.$v.user.username.required && errors.push('Username is required.')
+        if (!this.$v.user.email.$dirty) return errors
+        !this.$v.user.email.minLength && errors.push('Email must be minimum 6 characters long')
+        !this.$v.user.email.maxLength && errors.push('Email must be at most 20 characters long')
+        !this.$v.user.email.required && errors.push('Email is required.')
+        !this.$v.user.email.email && errors.push('Email is not valid.')
         return errors
       },
       passwordErrors () {
         const errors = []
         if (!this.$v.user.password.$dirty) return errors
-        !this.$v.user.password.minLength && errors.push('Password must be minimum 3 characters long')
+        !this.$v.user.password.minLength && errors.push('Password must be minimum 6 characters long')
         !this.$v.user.password.maxLength && errors.push('Password must be at most 20 characters long')
         !this.$v.user.password.required && errors.push('Password is required.')
         return errors
       },
     },
+
     created() {
       let token = localStorage.getItem('token')
       if(typeof(token) !== 'undefined' && token !== null && token !== 'null' && token !== '') {
@@ -147,6 +152,7 @@
         }
       }
     },
+
     watch: {
       loader () {
         const l = this.loader

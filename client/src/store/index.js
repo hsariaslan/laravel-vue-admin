@@ -236,7 +236,7 @@ export default new Vuex.Store({
           })
         })
         commit('get', datas)
-        console.log(datas)
+        // console.log(datas)
       })
     },
     

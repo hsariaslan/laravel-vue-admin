@@ -70,6 +70,21 @@
   import DeleteDialog from "@/components/DeleteDialog.vue";
   let db = new Localbase('db')
   db.config.debug = false
+  // const axios = require('axios');
+
+  // // Make a request for a user with a given ID
+  // axios.get('http://localhost:8000/api/v1/users')
+  // .then(function (response) {
+  //   // handle success
+  //   console.log(response.data.data);
+  // })
+  // .catch(function (error) {
+  //   // handle error
+  //   console.log(error);
+  // })
+  // .then(function () {
+  //   // always executed
+  // });
 
   export default {
     name: 'Users',

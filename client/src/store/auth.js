@@ -1,8 +1,5 @@
-import Vue from 'vue'
-import Localbase from 'localbase'
-
-let db = new Localbase('db')
-db.config.debug = false
+import axios from 'axios'
+axios.defaults.withCredentials = true;
 
 const auth = {
   namespaced: true,
@@ -93,33 +90,20 @@ const auth = {
   actions: {
     login({ commit }, credentials) {
       return new Promise((resolve, reject) => {
-        db.collection('users').doc({ username: credentials.username, password: credentials.password }).get()
-        .then(user => {
-          if(typeof(user) !== 'undefined') {
-            let token = Vue.helpers.makeHash(64)
-            if(credentials.rememberMe === true) {
-              user.rememberMe = true
-              localStorage.setItem('token', token)
-              sessionStorage.removeItem('token')
-            } else {
-              sessionStorage.setItem('token', token)
-              localStorage.removeItem('token')
-            }
-            // console.log(user)
-            // commit('resetLoginAttempts', user)
-            commit('login', user)
+        axios.get(process.env.VUE_APP_SERVER_URL + '/sanctum/csrf-cookie').then(response => {
+          axios.post(process.env.VUE_APP_API_URL + '/login', {
+            email: credentials.email,
+            password: credentials.password
+          })
+
+          .then((response) => {
+            commit('login', credentials)
             resolve('/')
-          } else {
-            let errors = {
-              'code'    : 401,
-              'message' : 'Invalid credentials',
-            }
-            commit('invalidLogin', errors)
-            reject(errors)
-          }
-        })
-        .catch(error => {
-          reject(error)
+          })
+          
+          .catch((error) => {
+            reject(error)
+          })
         })
       })
     },
