@@ -1,11 +1,11 @@
 ## Laravel Vue Admin
 
-Admin panel with Laravel back-end and Vue front-end
+Admin panel with Laravel backend and Vue frontend
 
 
-## Laravel Back-end Setup
+## Laravel Backend Setup
 
-```
+```bash
 # change directory to server
 $ cd server
 
@@ -20,14 +20,12 @@ $ php artisan migrate --seed
 
 # serve at localhost:8000
 $ php artisan serve
-
-# your apis will be served under http://localhost:8000/api/v1
 ```
 
 
-## Vue Front-end setup
+## Vue Frontend Setup
 
-```
+```bash
 # change directory to client
 $ cd client
 
@@ -35,7 +33,7 @@ $ cd client
 $ npm install
 
 # compiles and hot-reloads for development under localhost:8080
-npm run serve
+$ npm run serve
 ```
 
 
