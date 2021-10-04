@@ -1,25 +1,22 @@
-## Laravel Admin Api
+## Laravel Vue Admin
 
-Cms APIs with Laravel
+Admin panel with Laravel backend and Vue frontend
 
-## Setup
+## Laravel Backend Setup
 
 ```bash
+# change directory to server
+$ cd server
+
 # install dependencies
 $ composer install
 
-# copy .env.example file into .env then update your database name and credentials
+# copy .env.example file into .env then update your database name and database credentials
 $ cp .env.example .env
 
-# run migrations
-$ php artisan migrate
+# run migrations and seeds
+$ php artisan migrate --seed
 
 # serve at localhost:8000
 $ php artisan serve
-
-# your apis will be served under http://localhost:8000/api/v1
 ```
-
-## License
-
-Laravel Admin Api is licensed under the [MIT license](https://opensource.org/licenses/MIT).

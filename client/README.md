@@ -1,19 +1,16 @@
-# vue-admin
+## Laravel Vue Admin
 
-## Project setup
-```
-npm install
-```
+Admin panel with Laravel backend and Vue frontend
 
-### Compiles and hot-reloads for development
-```
-npm run serve
-```
+## Vue Frontend Setup
 
-### Compiles and minifies for production
-```
-npm run build
-```
+```bash
+# install dependencies
+$ npm install
 
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
+# copy .env.example file into .env
+$ cp .env.example .env
+
+# compiles and hot-reloads for development under localhost:8080
+$ npm run serve
+```
