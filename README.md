@@ -5,7 +5,7 @@ Admin panel with Laravel back-end and Vue front-end
 
 ## Laravel Back-end Setup
 
-```bash
+```
 # change directory to server
 $ cd server
 
@@ -27,7 +27,7 @@ $ php artisan serve
 
 ## Vue Front-end setup
 
-```bash
+```
 # change directory to client
 $ cd client
 
