@@ -5,9 +5,6 @@ Admin panel with Laravel backend and Vue frontend
 ## Laravel Backend Setup
 
 ```bash
-# change directory to server
-$ cd server
-
 # install dependencies
 $ composer install
 
