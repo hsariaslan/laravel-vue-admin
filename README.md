@@ -32,6 +32,9 @@ $ cd client
 # install dependencies
 $ npm install
 
+# copy .env.example file into .env
+$ cp .env.example .env
+
 # compiles and hot-reloads for development under localhost:8080
 $ npm run serve
 ```
