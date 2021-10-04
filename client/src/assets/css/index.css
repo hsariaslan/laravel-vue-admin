@@ -1,0 +1,71 @@
+@import "tailwindcss/base";
+@import "tailwindcss/components";
+@import "tailwindcss/utilities";
+@import "fonts.css";
+
+@layer components {
+  .logo-link:hover .logo-text-lg {
+    color: #F87171 !important
+  }
+
+  .logo-link:hover .logo-text-sm {
+    color: #EF4444 !important
+  }
+
+  .menu-links:hover .menu-texts, .menu-links:hover .menu-icons {
+    color: #EF4444 !important
+  }
+
+  .menu-links:after {
+    border-bottom:1px solid #ddd
+  }
+  
+  .profile {
+    @apply tw-p-2 tw-px-3 tw-flex tw-justify-between tw-items-center tw-gap-2 tw-bg-sideBar-800 tw-text-trueGray-550 !important
+  }
+
+  .profile-img {
+    @apply tw-rounded-full tw-border-2 tw-border-red-500
+  }
+
+  .profile:hover {
+    @apply tw-text-red-500 !important
+  }
+
+  .profile:hover .profile-img {
+    @apply tw-border-dotted
+  }
+  
+  .profile-links {
+    @apply tw-flex tw-gap-1 tw-items-center tw-text-trueGray-550 tw-my-1 !important
+  }
+
+  .back {
+    @apply tw-text-trueGray-600 tw-transition-all hover:tw-text-indigo-500 !important
+  }
+
+  .back:hover .v-icon {
+    @apply tw-text-indigo-500 !important
+  }
+
+  .edit {
+    @apply tw-text-trueGray-600 tw-transition-all hover:tw-text-green-500 !important
+  }
+
+  .edit:hover .v-icon {
+    @apply tw-text-green-500 !important
+  }
+
+  .delete {
+    @apply tw-text-trueGray-600 tw-transition-all hover:tw-text-red-500 !important
+  }
+
+  .delete:hover .v-icon {
+    @apply tw-text-red-500 !important
+  }
+
+  .success-links {
+    @apply tw-text-white tw-underline tw-transition-all hover:tw-text-red-500 !important
+  }
+  
+}
