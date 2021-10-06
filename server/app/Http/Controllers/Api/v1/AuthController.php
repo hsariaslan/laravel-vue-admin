@@ -21,7 +21,7 @@ class AuthController extends Controller
         }
 
         return response([
-            'message' => 'The provided credentials do not match our records',
+            'message' => 'Email or password is wrong',
         ], 401);
     }
 
