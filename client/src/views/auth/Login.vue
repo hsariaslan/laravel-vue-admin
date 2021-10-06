@@ -1,5 +1,5 @@
 <template>
-  <v-form>
+  <v-form @submit.prevent="loginAttempt">
     <v-card class="elevation-12">
       <v-toolbar dark color="primary">
         <v-toolbar-title>Login</v-toolbar-title>
@@ -13,8 +13,8 @@
           required
           v-model="user.email"
           :error-messages="emailErrors"
-          @input="$v.user.email.$touch()"
-          @blur="$v.user.email.$touch()"
+          @input="input('email')"
+          @blur="input('email')"
         ></v-text-field>
         <v-text-field
           prepend-icon="mdi-lock"
@@ -24,8 +24,8 @@
           required
           v-model="user.password"
           :error-messages="passwordErrors"
-          @input="$v.user.password.$touch()"
-          @blur="$v.user.password.$touch()"
+          @input="input('password')"
+          @blur="input('password')"
         ></v-text-field>
         <v-checkbox
           v-model="user.rememberMe"
@@ -40,9 +40,9 @@
         <v-btn
           color="primary"
           class="mr-2 mt-3 mb-2"
-          :disabled="$v.$invalid || !valid"
+          :disabled="disabled"
           :loading="loading"
-          @click="loginAttempt"
+          type="submit"
         >
           Login
           <template v-slot:loader>
@@ -80,43 +80,53 @@
 
     data: () => ({
       user: {
-        email: "admin@sariaslan.com",
-        password: "123456",
+        // email: "admin@sariaslan.com",
+        // password: "123456",
+        email: "",
+        password: "",
         rememberMe: false,
       },
       errors: [],
       error: {},
       submitStatus: '',
-      valid: true,
-      loader: null,
+      disabled: true,
       loading: false,
       alert: false,
     }),
 
     methods: {
-      async loginAttempt() {
-        this.valid = false
+      loginAttempt() {
+        this.disabled = true
+        this.loading = true
         this.alert = false
         this.$v.$touch()
         if (this.$v.$invalid) {
           this.submitStatus = 'ERROR'
         } else {
-          this.loader = 'loading';
           this.submitStatus = 'PENDING'
-          this.valid = true
           this.$store.dispatch('auth/login', this.user)
           .then(uri => {
+            this.loading = false
             this.$router.push(uri)
           })
           .catch(err => {
-            console.log(err.response.data.message)
             this.error = {
               status: err.response.status,
               message: err.response.data.message
             }
+            this.disabled = false
             this.alert = true
+            this.loading = false
           })
         }
+      },
+
+      input(input) {
+        switch (input) {
+          case 'email': this.$v.user.email.$touch(); break;
+          case 'password': this.$v.user.password.$touch(); break;
+        }
+        this.disabled = this.$v.$invalid
       }
     },
 
@@ -142,67 +152,15 @@
     },
 
     created() {
-      let token = localStorage.getItem('token')
-      if(typeof(token) !== 'undefined' && token !== null && token !== 'null' && token !== '') {
-        this.$router.push("/")
-      } else {
-        token = sessionStorage.getItem('token')
-        if(typeof(token) !== 'undefined' && token !== null && token !== 'null' && token !== '') {
-          this.$router.push("/")
-        }
-      }
-    },
-
-    watch: {
-      loader () {
-        const l = this.loader
-        this[l] = !this[l]
-
-        setTimeout(() => (this[l] = false), 500)
-
-        this.loader = null
-      },
+      // let token = localStorage.getItem('token')
+      // if(typeof(token) !== 'undefined' && token !== null && token !== 'null' && token !== '') {
+      //   this.$router.push("/")
+      // } else {
+      //   token = sessionStorage.getItem('token')
+      //   if(typeof(token) !== 'undefined' && token !== null && token !== 'null' && token !== '') {
+      //     this.$router.push("/")
+      //   }
+      // }
     },
   };
 </script>
-
-<style scoped>
-
-  .custom-loader {
-    animation: loader 1s infinite;
-    display: flex;
-  }
-  @-moz-keyframes loader {
-    from {
-      transform: rotate(0);
-    }
-    to {
-      transform: rotate(360deg);
-    }
-  }
-  @-webkit-keyframes loader {
-    from {
-      transform: rotate(0);
-    }
-    to {
-      transform: rotate(360deg);
-    }
-  }
-  @-o-keyframes loader {
-    from {
-      transform: rotate(0);
-    }
-    to {
-      transform: rotate(360deg);
-    }
-  }
-  @keyframes loader {
-    from {
-      transform: rotate(0);
-    }
-    to {
-      transform: rotate(360deg);
-    }
-  }
-
-</style>
