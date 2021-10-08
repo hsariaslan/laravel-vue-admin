@@ -16,11 +16,6 @@ class UserController extends Controller
         return new UserCollection(User::all());
     }
 
-    public function show (User $user):UserResource
-    {
-        return new UserResource($user);
-    }
-
     public function store (StoreUserRequest $request):UserResource
     {
         $user = User::create([
@@ -32,6 +27,11 @@ class UserController extends Controller
         ]);
         $user->assignRole($request->roles);
         $user->givePermissionTo($request->permissions);
+        return new UserResource($user);
+    }
+
+    public function show (User $user):UserResource
+    {
         return new UserResource($user);
     }
 
@@ -48,7 +48,7 @@ class UserController extends Controller
         return new UserResource($user);
     }
 
-    public function delete (User $user):bool
+    public function destroy (User $user):bool
     {
         $user->syncRoles();
         $user->syncPermissions();

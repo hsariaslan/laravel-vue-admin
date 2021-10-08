@@ -15,11 +15,6 @@ class RoleController extends Controller
         return new RoleCollection(Role::all());
     }
 
-    public function show (Role $role):RoleResource
-    {
-        return new RoleResource($role);
-    }
-
     public function store (StoreRoleRequest $request):RoleResource
     {
         $role = Role::create([
@@ -29,6 +24,11 @@ class RoleController extends Controller
             'guard'         => 'web',
         ]);
         $role->givePermissionTo($request->permissions);
+        return new RoleResource($role);
+    }
+
+    public function show (Role $role):RoleResource
+    {
         return new RoleResource($role);
     }
 
@@ -42,7 +42,7 @@ class RoleController extends Controller
         return new RoleResource($role);
     }
 
-    public function delete (Role $role):bool
+    public function destroy (Role $role):bool
     {
         $role->syncPermissions();
         $role->delete();

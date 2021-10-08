@@ -15,11 +15,6 @@ class PermissionController extends Controller
         return new PermissionCollection(Permission::all());
     }
 
-    public function show (Permission $permission):PermissionResource
-    {
-        return new PermissionResource($permission);
-    }
-
     public function store (StorePermissionRequest $request):PermissionResource
     {
         $permission = Permission::create([
@@ -27,6 +22,11 @@ class PermissionController extends Controller
             'display_name'  => $request->display_name,
             'guard'         => 'web',
         ]);
+        return new PermissionResource($permission);
+    }
+
+    public function show (Permission $permission):PermissionResource
+    {
         return new PermissionResource($permission);
     }
 
@@ -38,7 +38,7 @@ class PermissionController extends Controller
         return new PermissionResource($permission);
     }
 
-    public function delete (Permission $permission):bool
+    public function destroy (Permission $permission):bool
     {
         $permission->delete();
         return true;
