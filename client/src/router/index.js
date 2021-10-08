@@ -58,11 +58,6 @@ let auth = {
       component: Login,
     },
     {
-      path: '/logout',
-      name: 'Logout',
-      component: Logout,
-    },
-    {
       path: '/forget-password',
       name: 'ForgetPassword',
       component: ForgetPassword,
@@ -84,7 +79,12 @@ const routes = [
         path: 'dashboard',
         name: 'Dashboard',
         components: { default: Dashboard },
-      }
+      },
+      {
+        path: '/logout',
+        name: 'Logout',
+        component: Logout,
+      },
     ]
   },
   {
