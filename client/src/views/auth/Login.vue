@@ -153,12 +153,12 @@
 
     created() {
       let userStorageName = process.env.VUE_APP_STORAGE_NAME + '_user_'
-      let user = localStorage.getItem(userStorageName + 'email')
-      if(typeof(user) !== 'undefined' && user !== null && user !== 'null' && user !== '') {
+      let userEmail = localStorage.getItem(userStorageName + 'email')
+      if(this.$helpers.isNotNull(userEmail)) {
         this.$router.push("/")
       } else {
-        user = sessionStorage.getItem(userStorageName + 'email')
-        if(typeof(user) !== 'undefined' && user !== null && user !== 'null' && user !== '') {
+        userEmail = sessionStorage.getItem(userStorageName + 'email')
+        if(this.$helpers.isNotNull(userEmail)) {
           this.$router.push("/")
         }
       }

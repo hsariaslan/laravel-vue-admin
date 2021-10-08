@@ -56,9 +56,16 @@
             <v-divider></v-divider>
             <router-link to="/profile" class="profile" @click="settings = false">
               <img src="@/assets/img/profile.jpg" alt="profile.jpg" class="profile-img">
-              <span>Hakan Sarıaslan</span>
+              <span>{{user.name + ' ' + user.surname}}</span>
               <v-icon color="grey" class="tw-w-4">mdi-circle-small</v-icon>
-              <span class="tw-text-red-500 tw-font-medium">Admin</span>
+              <div
+                v-for="(role, id) in user.roles"
+                :key="id"
+              >
+                <span class="tw-font-medium" :style="`color:#${role[2]}`">
+                  {{role[1]}}
+                </span>
+              </div>
             </router-link>
             <v-divider></v-divider>
             <Menu :items="profileLinks" @click="settings = false" />
@@ -76,38 +83,20 @@
 import { mapGetters } from "vuex";
 import Menu from '@/components/Menu.vue';
 import Breadcrumbs from '@/components/Breadcrumbs.vue';
+
 export default {
   name: 'Layout',
   components: {
     Menu,
     Breadcrumbs,
   },
+
   data () {
     return {
       drawer: null,
       settings: false,
-      menuLinks: [
-        {
-          title: 'Dashboard',
-          link: '/dashboard',
-          icon: 'mdi-monitor-dashboard'
-        },
-        {
-          title: 'Users',
-          link: '/users',
-          icon: 'mdi-account-group'
-        },
-        {
-          title: 'Roles',
-          link: '/roles',
-          icon: 'mdi-account-details'
-        },
-        {
-          title: 'Permissions',
-          link: '/permissions',
-          icon: 'mdi-account-check'
-        },
-      ],
+      user: {},
+      menuLinks: [],
       profileLinks: [
         {
           title: 'Profile',
@@ -122,19 +111,88 @@ export default {
       ],
     }
   },
+
   computed: {
     ...mapGetters(['auth/login']),
   },
+  
   created() {
     // console.log(this['auth/login'])
     let userStorageName = process.env.VUE_APP_STORAGE_NAME + '_user_'
-    let user = localStorage.getItem(userStorageName + 'email')
-    if(typeof(user) === 'undefined' || user === null || user === 'null' || user === '') {
-      user = sessionStorage.getItem(userStorageName + 'email')
-      if(typeof(user) === 'undefined' || user === null || user === 'null' || user === '') {
+    let userEmail = localStorage.getItem(userStorageName + 'email')
+
+    if(this.$helpers.isNull(userEmail)) {
+      userEmail = sessionStorage.getItem(userStorageName + 'email')
+
+      if(this.$helpers.isNull(userEmail)) {
         this.$router.push("/login")
+      } else {
+        this.user.email       = this.$helpers.decrypt(userEmail)
+        this.user.username    = this.$helpers.decrypt(sessionStorage.getItem(userStorageName + 'username'))
+        this.user.name        = this.$helpers.decrypt(sessionStorage.getItem(userStorageName + 'name'))
+        this.user.surname     = this.$helpers.decrypt(sessionStorage.getItem(userStorageName + 'surname'))
+        this.user.roles       = this.$helpers.decrypt(sessionStorage.getItem(userStorageName + 'roles'))
+        this.user.permissions = this.$helpers.decrypt(sessionStorage.getItem(userStorageName + 'permissions'))
       }
+    } else {
+      this.user.email         = this.$helpers.decrypt(userEmail)
+      this.user.username      = this.$helpers.decrypt(localStorage.getItem(userStorageName + 'username'))
+      this.user.name          = this.$helpers.decrypt(localStorage.getItem(userStorageName + 'name'))
+      this.user.surname       = this.$helpers.decrypt(localStorage.getItem(userStorageName + 'surname'))
+      this.user.roles         = this.$helpers.decrypt(localStorage.getItem(userStorageName + 'roles'))
+      this.user.permissions   = this.$helpers.decrypt(localStorage.getItem(userStorageName + 'permissions'))
     }
+
+    let roles = []
+    let i = 0
+    let j = 0
+    roles.push([])
+
+    this.user.roles.forEach(value => {
+      if(i === 0 && j === 0) {
+        roles[0].push(value)
+      } else if(j % 3 !== 0) {
+        roles[i].push(value)
+      } else {
+        i ++
+        j = 0
+        roles.push([])
+        roles[i].push(value)
+      }
+      j ++
+    });
+
+    this.user.roles = roles
+    // console.log(this.user.roles)
+    // console.log(this.user.permissions)
+
+    this.user.permissions.forEach(permission => {
+      switch(permission) {
+        case 'show_dashboard': this.menuLinks.push({
+          title: 'Dashboard',
+          link: '/dashboard',
+          icon: 'mdi-monitor-dashboard'
+        }); break;
+
+        case 'list_users' || 'create_user' || 'show_user' || 'update_user' || 'delete_user': this.menuLinks.push({
+          title: 'Users',
+          link: '/users',
+          icon: 'mdi-account-group'
+        }); break;
+
+        case 'list_roles' || 'create_role' || 'show_role' || 'update_role' || 'delete_role': this.menuLinks.push({
+          title: 'Roles',
+          link: '/roles',
+          icon: 'mdi-account-details'
+        }); break;
+
+        case 'list_permissions' || 'create_permission' || 'show_permission' || 'update_permission' || 'delete_permission': this.menuLinks.push({
+          title: 'Permissions',
+          link: '/permissions',
+          icon: 'mdi-account-check'
+        }); break;
+      }
+    });
   }
 };
 </script>
