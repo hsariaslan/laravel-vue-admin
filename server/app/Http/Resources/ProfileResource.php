@@ -3,6 +3,8 @@
 namespace App\Http\Resources;
 
 use Illuminate\Http\Resources\Json\JsonResource;
+use Illuminate\Support\Facades\Auth;
+use Spatie\Permission\Models\Permission;
 
 class ProfileResource extends JsonResource
 {
@@ -15,12 +17,17 @@ class ProfileResource extends JsonResource
     public function toArray($request)
     {
         return [
-            'username'      => $this->username,
-            'email'         => $this->email,
-            'name'          => $this->name,
-            'surname'       => $this->surname,
-            'roles'         => $this->getRoleNames(),
-            'permissions'   => $this->getPermissionNames(),
+            'username'      => apiCrypt($this->username),
+            'email'         => apiCrypt($this->email),
+            'name'          => apiCrypt($this->name),
+            'surname'       => apiCrypt($this->surname),
+            'roles'         => apiCrypt(json_encode((array)Auth::user()->getRolesNamesAndColor())),
+            'permissions'   => $this->when(
+                Auth::user()->isAdmin(), function () {
+                    return apiCrypt(Permission::all()->pluck('name'));
+                }, function() {
+                    return apiCrypt($this->getAllPermissions()->pluck('name'));
+                }),
         ];
     }
 }
