@@ -30,6 +30,9 @@ class RolePermissionSeeder extends Seeder
 
         // All permissions
         $permissions = [
+            // dashboard permissions
+            'Show Dashboard',
+
             // users permissions
             'List Users',
             'Create User',
@@ -73,6 +76,9 @@ class RolePermissionSeeder extends Seeder
 
         // Editor permissions
         $permissions = [
+            // dashboard permissions
+            'Show Dashboard',
+
             // users permissions
             'List Users',
             'Create User',
@@ -103,6 +109,9 @@ class RolePermissionSeeder extends Seeder
 
         // Member permissions
         $permissions = [
+            // dashboard permissions
+            'Show Dashboard',
+            
             // users permissions
             'List Users',
             'Show User',
