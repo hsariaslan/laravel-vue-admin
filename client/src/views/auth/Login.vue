@@ -152,15 +152,16 @@
     },
 
     created() {
-      // let token = localStorage.getItem('token')
-      // if(typeof(token) !== 'undefined' && token !== null && token !== 'null' && token !== '') {
-      //   this.$router.push("/")
-      // } else {
-      //   token = sessionStorage.getItem('token')
-      //   if(typeof(token) !== 'undefined' && token !== null && token !== 'null' && token !== '') {
-      //     this.$router.push("/")
-      //   }
-      // }
+      let userStorageName = process.env.VUE_APP_STORAGE_NAME + '_user_'
+      let user = localStorage.getItem(userStorageName + 'email')
+      if(typeof(user) !== 'undefined' && user !== null && user !== 'null' && user !== '') {
+        this.$router.push("/")
+      } else {
+        user = sessionStorage.getItem(userStorageName + 'email')
+        if(typeof(user) !== 'undefined' && user !== null && user !== 'null' && user !== '') {
+          this.$router.push("/")
+        }
+      }
     },
   };
 </script>

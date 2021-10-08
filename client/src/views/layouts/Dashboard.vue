@@ -126,13 +126,15 @@ export default {
     ...mapGetters(['auth/login']),
   },
   created() {
-    // let token = localStorage.getItem('token')
-    // if(typeof(token) === 'undefined' || token === null || token === 'null' || token === '') {
-    //   token = sessionStorage.getItem('token')
-    //   if(typeof(token) === 'undefined' || token === null || token === 'null' || token === '') {
-    //     this.$router.push("/login")
-    //   }
-    // }
+    // console.log(this['auth/login'])
+    let userStorageName = process.env.VUE_APP_STORAGE_NAME + '_user_'
+    let user = localStorage.getItem(userStorageName + 'email')
+    if(typeof(user) === 'undefined' || user === null || user === 'null' || user === '') {
+      user = sessionStorage.getItem(userStorageName + 'email')
+      if(typeof(user) === 'undefined' || user === null || user === 'null' || user === '') {
+        this.$router.push("/login")
+      }
+    }
   }
 };
 </script>
