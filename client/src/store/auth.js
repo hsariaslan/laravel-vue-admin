@@ -61,7 +61,7 @@ const auth = {
           })
           .then((response) => {
             let user = response.data.data
-            console.log(user)
+            // console.log(user.roles)
             let userStorageName = process.env.VUE_APP_STORAGE_NAME + '_user_'
             if(credentials.rememberMe === true) {
               localStorage.setItem(userStorageName + 'username', user.username)

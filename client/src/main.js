@@ -35,14 +35,6 @@ Vue.directive('is', (el, binding, vnode) => {
   }
 })
 
-
-new Vue({
-  router,
-  store,
-  vuetify,
-  render: h => h(App)
-}).$mount('#app')
-
 const helper = {
   install () {
     Vue.helpers = helpers
@@ -51,3 +43,10 @@ const helper = {
 }
 
 Vue.use(helper)
+
+new Vue({
+  router,
+  store,
+  vuetify,
+  render: h => h(App)
+}).$mount('#app')
