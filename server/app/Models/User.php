@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -44,4 +43,26 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
+
+    public function isAdmin()
+    {
+        return $this->roles()->where('name', 'admin')->exists();
+    }
+
+    public function getRolesNamesAndColor()
+    {
+        $roles = [];
+        $i = 0;
+
+        foreach($this->roles()->get() as $role) {
+            $roles[$i] = [
+                $role->name,
+                $role->display_name,
+                $role->color
+            ];
+            $i ++;
+        }
+
+        return $roles;
+    }
 }
