@@ -5,19 +5,17 @@ namespace App\Http\Controllers\Api\v1;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\LoginRequest;
 use Illuminate\Http\Request;
-use Illuminate\Http\Response;
+use App\Http\Resources\ProfileResource;
 use Illuminate\Support\Facades\Auth;
 
 class AuthController extends Controller
 {
-    public function login (LoginRequest $request):Response
+    public function login (LoginRequest $request):ProfileResource
     {
         if (Auth::attempt($request->validated())) {
             $request->session()->regenerate();
-
-            return response([
-                'message' => 'Login successful',
-            ], 200);
+            $user = auth()->user();
+            return new ProfileResource($user);
         }
 
         return response([
