@@ -1,5 +1,5 @@
 <template>
-  <div>dene</div>
+  <div>Logging out...</div>
 </template>
 
 <script>
