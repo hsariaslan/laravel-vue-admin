@@ -1,159 +1,124 @@
-import Vue from 'vue'
-import VueRouter from 'vue-router'
+import Vue from 'vue';
+import VueRouter from 'vue-router';
+import authMiddleware from '../middleware/auth.js';
 
-import authMiddleware from '../middleware/auth.js'
+const auth = {
+  path: '/',
+  component: () => import('../views/layouts/Auth.vue'),
+  children: [
+    {
+      path: 'login',
+      name: 'Login',
+      component: () => import('../views/auth/Login.vue'),
+    },
 
-import DashboardLayout from '../views/layouts/Dashboard.vue'
-import AuthLayout from '../views/layouts/Auth.vue'
+    {
+      path: 'forget-password',
+      name: 'ForgetPassword',
+      component: () => import('../views/auth/ForgetPassword.vue'),
+    },
+  ],
+};
 
-import Dashboard from '../views/Dashboard.vue'
-
-import Login from '../views/auth/Login.vue'
-import ForgetPassword from '../views/auth/ForgetPassword.vue'
-import Logout from '../views/auth/Logout.vue'
-
-import Profile from '../views/Profile.vue'
-
-import Users from '../views/users/Users.vue'
-import ShowUser from '../views/users/Show.vue'
-import NewUser from '../views/users/New.vue'
-import EditUser from '../views/users/Edit.vue'
-
-import Roles from '../views/Roles.vue'
-import Permissions from '../views/Permissions.vue'
-
-let users = {
+const users = {
   path: '/users',
-  component: DashboardLayout,
+  component: () => import('../views/layouts/Dashboard.vue'),
   children: [
     {
       path: '',
       name: 'Users',
-      component: Users,
+      component: () => import('../views/users/Users.vue'),
       meta: {
         middleware: authMiddleware,
       },
     },
+
     {
       path: 'new',
       name: 'NewUser',
-      component: NewUser,
+      component: () => import('../views/users/New.vue'),
       meta: {
         middleware: authMiddleware,
       },
     },
+
     {
       path: ':id',
       name: 'ShowUser',
-      component: ShowUser,
+      component: () => import('../views/users/Show.vue'),
       meta: {
         middleware: authMiddleware,
       },
     },
+
     {
       path: ':id/edit',
       name: 'EditUser',
-      component: EditUser,
+      component: () => import('../views/users/Edit.vue'),
       meta: {
         middleware: authMiddleware,
       },
     },
-  ]
-}
-
-let auth = {
-  path: '/',
-  name: 'Auth',
-  component: AuthLayout,
-  children: [
-    {
-      path: '/login',
-      name: 'Login',
-      component: Login,
-    },
-    {
-      path: '/forget-password',
-      name: 'ForgetPassword',
-      component: ForgetPassword,
-    }
-  ]
-}
+  ],
+};
 
 const routes = [
   {
     path: '/',
-    name: 'Home',
     redirect: '/dashboard',
-  },
-  {
-    path: '/',
-    component: DashboardLayout,
+    component: () => import('../views/layouts/Dashboard.vue'),
     children: [
       {
         path: 'dashboard',
         name: 'Dashboard',
-        components: { default: Dashboard },
+        component: () => import('../views/Dashboard.vue'),
         meta: {
           middleware: authMiddleware,
         },
       },
+
       {
-        path: '/logout',
+        path: 'logout',
         name: 'Logout',
-        component: Logout,
+        component: () => import('../views/auth/Logout.vue'),
         meta: {
           middleware: authMiddleware,
         },
       },
-    ]
-  },
-  {
-    path: '/profile',
-    component: DashboardLayout,
-    children: [
+
       {
-        path: '',
+        path: 'profile',
         name: 'Profile',
-        component: Profile,
+        component: () => import('../views/Profile.vue'),
         meta: {
           middleware: authMiddleware,
         },
-      }
-    ]
-  },
-  {
-    path: '/roles',
-    component: DashboardLayout,
-    children: [
+      },
+
       {
-        path: '',
+        path: 'roles',
         name: 'Roles',
-        component: Roles,
+        component: () => import('../views/Roles.vue'),
         meta: {
           middleware: authMiddleware,
         },
-      }
-    ]
-  },
-  {
-    path: '/permissions',
-    component: DashboardLayout,
-    children: [
+      },
+
       {
-        path: '',
+        path: 'permissions',
         name: 'Permissions',
-        component: Permissions,
+        component: () => import('../views/Permissions.vue'),
         meta: {
           middleware: authMiddleware,
         },
-      }
-    ]
+      },
+    ],
   },
   auth,
   users,
 ];
 
-Vue.use(VueRouter)
+Vue.use(VueRouter);
 
 const router = new VueRouter({
   routes
@@ -193,4 +158,4 @@ router.beforeEach((to, from, next) => {
   return next();
 });
 
-export default router
+export default router;
