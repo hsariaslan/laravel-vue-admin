@@ -1,6 +1,8 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
 
+import authMiddleware from '../middleware/auth.js'
+
 import DashboardLayout from '../views/layouts/Dashboard.vue'
 import AuthLayout from '../views/layouts/Auth.vue'
 
@@ -27,22 +29,34 @@ let users = {
     {
       path: '',
       name: 'Users',
-      component: Users
+      component: Users,
+      meta: {
+        middleware: authMiddleware,
+      },
     },
     {
       path: 'new',
       name: 'NewUser',
-      component: NewUser
+      component: NewUser,
+      meta: {
+        middleware: authMiddleware,
+      },
     },
     {
       path: ':id',
       name: 'ShowUser',
-      component: ShowUser
+      component: ShowUser,
+      meta: {
+        middleware: authMiddleware,
+      },
     },
     {
       path: ':id/edit',
       name: 'EditUser',
-      component: EditUser
+      component: EditUser,
+      meta: {
+        middleware: authMiddleware,
+      },
     },
   ]
 }
@@ -79,11 +93,17 @@ const routes = [
         path: 'dashboard',
         name: 'Dashboard',
         components: { default: Dashboard },
+        meta: {
+          middleware: authMiddleware,
+        },
       },
       {
         path: '/logout',
         name: 'Logout',
         component: Logout,
+        meta: {
+          middleware: authMiddleware,
+        },
       },
     ]
   },
@@ -95,6 +115,9 @@ const routes = [
         path: '',
         name: 'Profile',
         component: Profile,
+        meta: {
+          middleware: authMiddleware,
+        },
       }
     ]
   },
@@ -106,6 +129,9 @@ const routes = [
         path: '',
         name: 'Roles',
         component: Roles,
+        meta: {
+          middleware: authMiddleware,
+        },
       }
     ]
   },
@@ -117,17 +143,54 @@ const routes = [
         path: '',
         name: 'Permissions',
         component: Permissions,
+        meta: {
+          middleware: authMiddleware,
+        },
       }
     ]
   },
   auth,
   users,
-]
+];
 
 Vue.use(VueRouter)
 
 const router = new VueRouter({
   routes
-})
+});
+
+function nextFactory(context, middleware, index) {
+  const subsequentMiddleware = middleware[index];
+  
+  if (!subsequentMiddleware) {
+    return context.next;
+  }
+
+  return (...parameters) => {
+    context.next(...parameters);
+    const nextMiddleware = nextFactory(context, middleware, index + 1);
+    subsequentMiddleware({ ...context, next: nextMiddleware });
+  };
+}
+
+router.beforeEach((to, from, next) => {
+  if (to.meta.middleware) {
+    const middleware = Array.isArray(to.meta.middleware)
+      ? to.meta.middleware
+      : [to.meta.middleware];
+
+    const context = {
+      from,
+      next,
+      router,
+      to,
+    };
+    const nextMiddleware = nextFactory(context, middleware, 1);
+
+    return middleware[0]({ ...context, next: nextMiddleware });
+  }
+
+  return next();
+});
 
 export default router
