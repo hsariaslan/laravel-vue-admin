@@ -117,56 +117,7 @@ export default {
   },
   
   created() {
-    // console.log(this['auth/login'])
-    let userStorageName = process.env.VUE_APP_STORAGE_NAME + '_user_'
-    let userEmail = localStorage.getItem(userStorageName + 'email')
-
-    if(this.$helpers.isNull(userEmail)) {
-      userEmail = sessionStorage.getItem(userStorageName + 'email')
-
-      if(this.$helpers.isNull(userEmail)) {
-        this.$router.push("/login")
-      } else {
-        this.user.email       = this.$helpers.decrypt(userEmail)
-        this.user.username    = this.$helpers.decrypt(sessionStorage.getItem(userStorageName + 'username'))
-        this.user.name        = this.$helpers.decrypt(sessionStorage.getItem(userStorageName + 'name'))
-        this.user.surname     = this.$helpers.decrypt(sessionStorage.getItem(userStorageName + 'surname'))
-        this.user.roles       = this.$helpers.decrypt(sessionStorage.getItem(userStorageName + 'roles'))
-        this.user.permissions = this.$helpers.decrypt(sessionStorage.getItem(userStorageName + 'permissions'))
-      }
-    } else {
-      this.user.email         = this.$helpers.decrypt(userEmail)
-      this.user.username      = this.$helpers.decrypt(localStorage.getItem(userStorageName + 'username'))
-      this.user.name          = this.$helpers.decrypt(localStorage.getItem(userStorageName + 'name'))
-      this.user.surname       = this.$helpers.decrypt(localStorage.getItem(userStorageName + 'surname'))
-      this.user.roles         = this.$helpers.decrypt(localStorage.getItem(userStorageName + 'roles'))
-      this.user.permissions   = this.$helpers.decrypt(localStorage.getItem(userStorageName + 'permissions'))
-    }
-
-    if(this.$helpers.isNotNull(this.user.roles)) {
-      let roles = []
-      let i = 0
-      let j = 0
-      roles.push([])
-
-      this.user.roles.forEach(value => {
-        if(i === 0 && j === 0) {
-          roles[0].push(value)
-        } else if(j % 3 !== 0) {
-          roles[i].push(value)
-        } else {
-          i ++
-          j = 0
-          roles.push([])
-          roles[i].push(value)
-        }
-        j ++
-      });
-
-      this.user.roles = roles
-    }
-    // console.log(this.user.roles)
-    // console.log(this.user.permissions)
+    this.user = this.$helpers.getUserDataFromStorage();
 
     if(this.$helpers.isNotNull(this.user.permissions)) {
       this.user.permissions.forEach(permission => {
