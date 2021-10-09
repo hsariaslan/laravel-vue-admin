@@ -143,56 +143,60 @@ export default {
       this.user.permissions   = this.$helpers.decrypt(localStorage.getItem(userStorageName + 'permissions'))
     }
 
-    let roles = []
-    let i = 0
-    let j = 0
-    roles.push([])
+    if(this.$helpers.isNotNull(this.user.roles)) {
+      let roles = []
+      let i = 0
+      let j = 0
+      roles.push([])
 
-    this.user.roles.forEach(value => {
-      if(i === 0 && j === 0) {
-        roles[0].push(value)
-      } else if(j % 3 !== 0) {
-        roles[i].push(value)
-      } else {
-        i ++
-        j = 0
-        roles.push([])
-        roles[i].push(value)
-      }
-      j ++
-    });
+      this.user.roles.forEach(value => {
+        if(i === 0 && j === 0) {
+          roles[0].push(value)
+        } else if(j % 3 !== 0) {
+          roles[i].push(value)
+        } else {
+          i ++
+          j = 0
+          roles.push([])
+          roles[i].push(value)
+        }
+        j ++
+      });
 
-    this.user.roles = roles
+      this.user.roles = roles
+    }
     // console.log(this.user.roles)
     // console.log(this.user.permissions)
 
-    this.user.permissions.forEach(permission => {
-      switch(permission) {
-        case 'show_dashboard': this.menuLinks.push({
-          title: 'Dashboard',
-          link: '/dashboard',
-          icon: 'mdi-monitor-dashboard'
-        }); break;
+    if(this.$helpers.isNotNull(this.user.permissions)) {
+      this.user.permissions.forEach(permission => {
+        switch(permission) {
+          case 'show_dashboard': this.menuLinks.push({
+            title: 'Dashboard',
+            link: '/dashboard',
+            icon: 'mdi-monitor-dashboard'
+          }); break;
 
-        case 'list_users' || 'create_user' || 'show_user' || 'update_user' || 'delete_user': this.menuLinks.push({
-          title: 'Users',
-          link: '/users',
-          icon: 'mdi-account-group'
-        }); break;
+          case 'list_users' || 'create_user' || 'show_user' || 'update_user' || 'delete_user': this.menuLinks.push({
+            title: 'Users',
+            link: '/users',
+            icon: 'mdi-account-group'
+          }); break;
 
-        case 'list_roles' || 'create_role' || 'show_role' || 'update_role' || 'delete_role': this.menuLinks.push({
-          title: 'Roles',
-          link: '/roles',
-          icon: 'mdi-account-details'
-        }); break;
+          case 'list_roles' || 'create_role' || 'show_role' || 'update_role' || 'delete_role': this.menuLinks.push({
+            title: 'Roles',
+            link: '/roles',
+            icon: 'mdi-account-details'
+          }); break;
 
-        case 'list_permissions' || 'create_permission' || 'show_permission' || 'update_permission' || 'delete_permission': this.menuLinks.push({
-          title: 'Permissions',
-          link: '/permissions',
-          icon: 'mdi-account-check'
-        }); break;
-      }
-    });
+          case 'list_permissions' || 'create_permission' || 'show_permission' || 'update_permission' || 'delete_permission': this.menuLinks.push({
+            title: 'Permissions',
+            link: '/permissions',
+            icon: 'mdi-account-check'
+          }); break;
+        }
+      });
+    }
   }
 };
 </script>
