@@ -49,13 +49,14 @@ class User extends Authenticatable
         return $this->roles()->where('name', 'admin')->exists();
     }
 
-    public function getRolesNamesAndColor()
+    public function getUserRoles()
     {
         $roles = [];
         $i = 0;
 
         foreach($this->roles()->get() as $role) {
             $roles[$i] = [
+                $role->id,
                 $role->name,
                 $role->display_name,
                 $role->color
@@ -64,5 +65,22 @@ class User extends Authenticatable
         }
 
         return $roles;
+    }
+
+    public function getUserPermissions()
+    {
+        $permissions = [];
+        $i = 0;
+
+        foreach($this->permissions()->get() as $permission) {
+            $permissions[$i] = [
+                $permission->id,
+                $permission->name,
+                $permission->display_name
+            ];
+            $i ++;
+        }
+
+        return $permissions;
     }
 }

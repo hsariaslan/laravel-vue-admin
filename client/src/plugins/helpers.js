@@ -1,16 +1,6 @@
 import CryptoJS from "crypto-js";
 
 export default {
-  makeHash(length) {
-    const characters        = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-    const charactersLength  = characters.length;
-    let result = '';
-    for (let i = 0; i < length; i++) {
-      result += characters.charAt(Math.floor(Math.random() * charactersLength));
-    }
-    return result;
-  },
-
   isNull(variable) {
     if(typeof(variable) === 'undefined' || variable === null || variable === 'null' || variable === '' || variable == [] || variable.length == 0) {
       return true;
@@ -21,6 +11,22 @@ export default {
 
   isNotNull(variable) {
     if(typeof(variable) !== 'undefined' && variable !== null && variable !== 'null' && variable !== '') {
+      return true;
+    } else {
+      return false;
+    }
+  },
+
+  isArrayOfObjects(variable) {
+    if(Array.isArray(variable) && typeof(variable[0]) === 'object' && variable !== null) {
+      return true;
+    } else {
+      return false;
+    }
+  },
+
+  isObject(variable) {
+    if(typeof(variable) === 'object' && variable !== null) {
       return true;
     } else {
       return false;
@@ -70,7 +76,7 @@ export default {
     user.roles.forEach(value => {
       if(i === 0 && j === 0) {
         roles[0].push(value);
-      } else if(j % 3 !== 0) {
+      } else if(j % 4 !== 0) {
         roles[i].push(value);
       } else {
         i ++;
@@ -96,5 +102,15 @@ export default {
       return this.decrypt(sessionStorage.getItem(data));
 
     }
+  },
+
+  makeHash(length) {
+    const characters        = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    const charactersLength  = characters.length;
+    let result = '';
+    for (let i = 0; i < length; i++) {
+      result += characters.charAt(Math.floor(Math.random() * charactersLength));
+    }
+    return result;
   },
 };

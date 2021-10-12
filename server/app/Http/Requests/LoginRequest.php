@@ -28,4 +28,16 @@ class LoginRequest extends FormRequest
             'password'  => ['required', 'min:6', 'max:20'],
         ];
     }
+
+    /**
+     * Get the validation messages that apply to the request.
+     *
+     * @return array
+     */
+    public function messages()
+    {
+        return [
+            'email.email' => 'The email must be a real email address.',
+        ];
+    }
 }

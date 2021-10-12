@@ -3,6 +3,8 @@
 namespace App\Http\Resources;
 
 use Illuminate\Http\Resources\Json\JsonResource;
+use App\Http\Resources\RoleCollection;
+use App\Http\Resources\PermissionCollection;
 
 class UserResource extends JsonResource
 {
@@ -15,14 +17,14 @@ class UserResource extends JsonResource
     public function toArray($request)
     {
         return [
-            'id'            => $this->id,
-            'username'      => $this->username,
-            'email'         => $this->email,
-            'name'          => $this->name,
-            'surname'       => $this->surname,
-            'roles'         => $this->getRoleNames(),
-            'permissions'   => $this->getPermissionNames(),
-            'created_at'    => date("d.m.Y", strtotime($this->created_at)),
+            'id'                => $this->id,
+            'username'          => $this->username,
+            'email'             => $this->email,
+            'name'              => $this->name,
+            'surname'           => $this->surname,
+            'roles'             => new RoleCollection($this->roles),
+            'permissions'       => new PermissionCollection($this->permissions),
+            'all_permissions'   => new PermissionCollection($this->getAllPermissions()),
         ];
     }
 }

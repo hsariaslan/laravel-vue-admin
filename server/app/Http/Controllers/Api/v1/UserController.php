@@ -39,9 +39,13 @@ class UserController extends Controller
     {
         $user->username = $request->username;
         $user->email    = $request->email;
-        $user->password = Hash::make($request->password);
         $user->name     = $request->name;
         $user->surname  = $request->surname;
+        
+        if(!is_null($request->password)) {
+            $user->password = Hash::make($request->password);
+        }
+        
         $user->syncRoles($request->roles);
         $user->syncPermissions($request->permissions);
         $user->save();

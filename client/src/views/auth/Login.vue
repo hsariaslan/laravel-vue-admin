@@ -65,30 +65,27 @@
 </template>
 
 <script>
-  import { mapGetters } from "vuex";
-  import { validationMixin } from 'vuelidate'
-  import { required, maxLength, minLength, email, } from 'vuelidate/lib/validators'
+  import { validationMixin } from 'vuelidate';
+  import { required, maxLength, minLength, email, } from 'vuelidate/lib/validators';
+
   export default {
     name: 'Login',
     mixins: [validationMixin],
     validations: {
       user: {
-        email: { required, minLength: minLength(6), maxLength: maxLength(30), email },
+        email: { required, minLength: minLength(6), maxLength: maxLength(50), email },
         password: { required, minLength: minLength(6), maxLength: maxLength(20) },
       }
     },
 
     data: () => ({
       user: {
-        // email: "admin@sariaslan.com",
-        // password: "123456",
         email: "",
         password: "",
         rememberMe: false,
       },
       errors: [],
       error: {},
-      submitStatus: '',
       disabled: true,
       loading: false,
       alert: false,
@@ -96,27 +93,24 @@
 
     methods: {
       loginAttempt() {
-        this.disabled = true
-        this.loading = true
-        this.alert = false
+        this.disabled = true;
+        this.loading = true;
+        this.alert = false;
         this.$v.$touch()
-        if (this.$v.$invalid) {
-          this.submitStatus = 'ERROR'
-        } else {
-          this.submitStatus = 'PENDING'
+        if (!this.$v.$invalid) {
           this.$store.dispatch('auth/login', this.user)
           .then(uri => {
-            this.loading = false
-            this.$router.push(uri)
+            this.loading = false;
+            this.$router.push(uri);
           })
           .catch(err => {
             this.error = {
               status: err.response.status,
               message: err.response.data.message
-            }
-            this.disabled = false
-            this.alert = true
-            this.loading = false
+            };
+            this.disabled = false;
+            this.alert = true;
+            this.loading = false;
           })
         }
       },
@@ -126,40 +120,40 @@
           case 'email': this.$v.user.email.$touch(); break;
           case 'password': this.$v.user.password.$touch(); break;
         }
-        this.disabled = this.$v.$invalid
+        this.disabled = this.$v.$invalid;
       }
     },
 
     computed: {
-      ...mapGetters(['auth/login', 'auth/errors']),
       emailErrors () {
-        const errors = []
-        if (!this.$v.user.email.$dirty) return errors
-        !this.$v.user.email.minLength && errors.push('Email must be minimum 6 characters long')
-        !this.$v.user.email.maxLength && errors.push('Email must be at most 20 characters long')
-        !this.$v.user.email.required && errors.push('Email is required.')
-        !this.$v.user.email.email && errors.push('Email is not valid.')
-        return errors
+        const errors = [];
+        if (!this.$v.user.email.$dirty) return errors;
+        !this.$v.user.email.minLength && errors.push('Email must be minimum 6 characters long');
+        !this.$v.user.email.maxLength && errors.push('Email must be at most 20 characters long');
+        !this.$v.user.email.required && errors.push('Email is required.');
+        !this.$v.user.email.email && errors.push('Email is not valid.');
+        return errors;
       },
       passwordErrors () {
-        const errors = []
-        if (!this.$v.user.password.$dirty) return errors
-        !this.$v.user.password.minLength && errors.push('Password must be minimum 6 characters long')
-        !this.$v.user.password.maxLength && errors.push('Password must be at most 20 characters long')
-        !this.$v.user.password.required && errors.push('Password is required.')
-        return errors
+        const errors = [];
+        if (!this.$v.user.password.$dirty) return errors;
+        !this.$v.user.password.minLength && errors.push('Password must be minimum 6 characters long');
+        !this.$v.user.password.maxLength && errors.push('Password must be at most 20 characters long');
+        !this.$v.user.password.required && errors.push('Password is required.');
+        return errors;
       },
     },
 
     created() {
-      let userStorageName = process.env.VUE_APP_STORAGE_NAME + '_user_'
-      let userEmail = localStorage.getItem(userStorageName + 'email')
+      let userStorageName = process.env.VUE_APP_STORAGE_NAME + '_user_';
+      let userEmail = localStorage.getItem(userStorageName + 'email');
+
       if(this.$helpers.isNotNull(userEmail)) {
-        this.$router.push("/")
+        this.$router.push("/");
       } else {
-        userEmail = sessionStorage.getItem(userStorageName + 'email')
+        userEmail = sessionStorage.getItem(userStorageName + 'email');
         if(this.$helpers.isNotNull(userEmail)) {
-          this.$router.push("/")
+          this.$router.push("/");
         }
       }
     },

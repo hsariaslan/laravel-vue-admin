@@ -9,7 +9,7 @@
         <v-list-item-content>
           <router-link to="/" class="logo-link">
             <v-list-item-title class="logo-text-lg tw-transition-all tw-text-white tw-text-xl">
-              Vue Admin
+              Laravel Vue Admin
             </v-list-item-title>
             <v-list-item-subtitle class="logo-text-sm tw-transition-all tw-text-trueGray-550 tw-text-xs">
               An open source cms panel
@@ -62,8 +62,8 @@
                 v-for="(role, id) in user.roles"
                 :key="id"
               >
-                <span class="tw-font-medium" :style="`color:#${role[2]}`">
-                  {{role[1]}}
+                <span class="tw-font-medium" :style="`color:#${role[3]}`">
+                  {{ role[2] }}
                 </span>
               </div>
             </router-link>
@@ -80,7 +80,6 @@
 </template>
 
 <script>
-import { mapGetters } from "vuex";
 import Menu from '@/components/Menu.vue';
 import Breadcrumbs from '@/components/Breadcrumbs.vue';
 
@@ -110,10 +109,6 @@ export default {
         },
       ],
     }
-  },
-
-  computed: {
-    ...mapGetters(['auth/login']),
   },
   
   created() {

@@ -8,16 +8,17 @@
       dense
       class="elevation-1"
       :items-per-page="15"
+      :loading="loading"
+      loading-text="Loading... Please wait"
     >
       <template v-slot:top>
-        <v-toolbar
-          flat
-        >
+        <v-toolbar flat>
           <v-btn
             color="primary"
             dark
             class="mb-2"
             to="/users/new"
+            v-can="'create_user'"
           >
             New User
           </v-btn>
@@ -29,71 +30,104 @@
             single-line
             hide-details
           ></v-text-field>
-          <DeleteDialog title="user" />
+          
+          <v-dialog v-model="dialog" max-width="500px" persistent>
+            <v-card>
+              <v-card-title class="text-h5">Are you sure you want to delete this user?</v-card-title>
+              <v-card-actions>
+                <v-spacer></v-spacer>
+                <template>
+                  <v-btn color="blue darken-1" text @click="toggleDialog('-1')">Cancel</v-btn>
+                  <v-btn color="blue darken-1" text @click="deleteData">
+                    OK
+                  </v-btn>
+                </template>
+                <v-spacer></v-spacer>
+              </v-card-actions>
+            </v-card>
+          </v-dialog>
+
         </v-toolbar>
       </template>
       <template v-slot:item.roles="{ item }">
-        <v-chip
-          v-for="(role, idx) in item.roles"
-          :key="idx"
-          :color="role.color"
-          dark
-        >
-          {{ role.name }}
-        </v-chip>
+        <div class="tw-flex-wrap">
+          <span
+            v-for="(role, idx) in item.roles"
+            :key="idx"
+            :style="'background-color:' + role.color"
+            class="chip"
+          >{{ role.display_name }}</span>
+        </div>
       </template>
       <template v-slot:item.permissions="{ item }">
-        <span
-          v-for="(permission, idx) in item.permissions"
-          :key="idx"
-          class="tw-bg-gray-200 tw-mx-1 tw-py-1 tw-px-2 tw-rounded-full"
-        >
-          {{ permission.name }}
-        </span>
+        <div class="tw-flex-wrap tw-items-center">
+          <div v-if="item.permissions.length > 0" class="tw-float-left tw-cursor-help">
+            <v-icon small color="orange" title="Direct permissions defined to this user">mdi-alert-circle-outline</v-icon>
+          </div>
+          <div v-if="item.roles[0].name === 'admin'" class="tw-float-left">
+            <i>All permissions</i>
+            <i v-if="item.all_permissions.length > 0" class="tw-text-red-500 tw-text-xs">
+              (Defining roles or permissions for this user are unnecessary since an admin already has all permissions)
+            </i>
+          </div>
+          <div
+            v-for="(permission, idx) in item.all_permissions"
+            :key="idx"
+            class="tw-m-1 tw-float-left"
+          >
+            <div v-if="!expandedPermissions.includes(datas.indexOf(item))">
+              <div
+                v-if="idx < 3"
+                class="permission-in-table"
+              >
+                {{ permission.display_name }}
+              </div>
+              <div
+                v-else-if="idx === 3"
+                class="permission-in-table tw-cursor-pointer tw-bg-blue-200 hover:tw-bg-white"
+                @click="expandPermissions(datas.indexOf(item))"
+              >
+                {{ item.all_permissions.length - idx }} more...
+              </div>
+            </div>
+            <div v-else>
+              <div class="permission-in-table tw-float-left">
+                {{ permission.display_name }}
+              </div>
+              <div
+                v-if="idx === item.all_permissions.length - 1"
+                class="permission-in-table tw-ml-1 tw-float-left tw-cursor-pointer tw-bg-red-200 hover:tw-bg-white"
+                @click="collapsePermissions(datas.indexOf(item))"
+              >
+                collapse
+              </div>
+            </div>
+          </div>
+        </div>
       </template>
       <template v-slot:item.actions="{ item }">
-        <router-link :to="`/users/${item.id}`" class="mr-2">
-          <v-icon small title="Show" class="hover:tw-text-blue-500">mdi-eye</v-icon>
-        </router-link>
-        <router-link :to="`/users/${item.id}/edit`" class="mr-2">
-          <v-icon small title="Edit" class="hover:tw-text-green-500">mdi-pencil</v-icon>
-        </router-link>
-        <v-icon small title="Delete" @click="$store.dispatch('dialogDelete', item)" class="hover:tw-text-red-500">mdi-delete</v-icon>
+        <div class="tw-flex tw-items-end">
+          <router-link :to="`/users/${item.id}`" class="mr-2">
+            <v-icon small title="Show" class="hover:tw-text-blue-500">mdi-eye</v-icon>
+          </router-link>
+          <router-link :to="`/users/${item.id}/edit`" class="mr-2">
+            <v-icon small title="Edit" class="hover:tw-text-green-500">mdi-pencil</v-icon>
+          </router-link>
+          <v-icon small title="Delete" @click="toggleDialog(datas.indexOf(item))" class="hover:tw-text-red-500">mdi-delete</v-icon>
+        </div>
       </template>
     </v-data-table>
   </v-card>
 </template>
 
 <script>
-  import { mapGetters } from "vuex";
-  import Localbase from 'localbase'
-  import DeleteDialog from "@/components/DeleteDialog.vue";
-  let db = new Localbase('db')
-  db.config.debug = false
-  // const axios = require('axios');
-
-  // // Make a request for a user with a given ID
-  // axios.get('http://localhost:8000/api/v1/users')
-  // .then(function (response) {
-  //   // handle success
-  //   console.log(response.data.data);
-  // })
-  // .catch(function (error) {
-  //   // handle error
-  //   console.log(error);
-  // })
-  // .then(function () {
-  //   // always executed
-  // });
+  const axios = require('axios');
 
   export default {
     name: 'Users',
-    components: {
-      DeleteDialog,
-    },
-    
     data: () => ({
-      headers : [
+      datas:[],
+      headers: [
         { text: 'ID',           value: 'id', },
         { text: 'Name',         value: 'name', },
         { text: 'Surname',      value: 'surname', },
@@ -103,21 +137,55 @@
         { text: 'Permissions',  value: 'permissions', sortable: false },
         { text: 'Actions',      value: 'actions',     sortable: false, align: 'right' },
       ],
-      tableSearch : '',
+      tableSearch: '',
+      loading: true,
+      expandedPermissions: [],
+      dialog: false,
+      deletingIndex: -1,
     }),
 
-    computed: {
-      ...mapGetters([
-        'datas',
-      ]),
+    created () {
+      axios.get('http://localhost:8000/api/v1/users')
+      .then((response) => {
+        this.datas = response.data.data;
+        this.loading = false;
+      })
+      .catch((error) => {
+        console.log(error);
+      });
     },
 
-    created () {
-      this.$store.dispatch('table', 'users')
-      this.$store.dispatch('getWithRelations', {
-        table: 'users',
-        relations: ['roles', 'permissions']
-      })
-    }
+    methods: {
+      deleteData() {
+        let deletingDataId = this.datas[this.deletingIndex].id;
+
+        axios.delete('http://localhost:8000/api/v1/users/' + deletingDataId)
+        .then(() => {
+          this.datas.splice(this.deletingIndex, 1);
+          this.toggleDialog();
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+      },
+
+      expandPermissions(index) {
+        if(!this.expandedPermissions.includes(index)) {
+          this.expandedPermissions.push(index);
+        }
+      },
+
+      collapsePermissions(index) {
+        index = this.expandedPermissions.indexOf(index);
+        this.expandedPermissions.splice(index, 1);
+      },
+
+      toggleDialog(index) {
+        this.dialog = !this.dialog;
+        if(index !== '-1') {
+          this.deletingIndex = index;
+        }
+      },
+    },
   }
 </script>

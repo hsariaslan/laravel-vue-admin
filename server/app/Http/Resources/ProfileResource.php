@@ -21,7 +21,7 @@ class ProfileResource extends JsonResource
             'email'         => apiCrypt($this->email),
             'name'          => apiCrypt($this->name),
             'surname'       => apiCrypt($this->surname),
-            'roles'         => apiCrypt(json_encode((array)Auth::user()->getRolesNamesAndColor())),
+            'roles'         => apiCrypt(json_encode((array)Auth::user()->getUserRoles())),
             'permissions'   => $this->when(
                 Auth::user()->isAdmin(), function () {
                     return apiCrypt(Permission::all()->pluck('name'));

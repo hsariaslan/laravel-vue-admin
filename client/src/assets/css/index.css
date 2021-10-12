@@ -67,6 +67,14 @@
   .success-links {
     @apply tw-text-white tw-underline tw-transition-all hover:tw-text-red-500 !important
   }
+
+  .permission-in-table {
+    @apply tw-bg-gray-200 tw-py-1 tw-px-2 tw-rounded-full tw-float-left !important
+  }
+
+  .chip {
+    @apply tw-text-white tw-py-1 tw-px-2 tw-m-1 tw-rounded-full !important
+  }
   
 }
 

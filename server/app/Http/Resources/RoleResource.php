@@ -19,7 +19,7 @@ class RoleResource extends JsonResource
             'name'          => $this->name,
             'display_name'  => $this->display_name,
             'color'         => '#'.$this->color,
-            'permissions'   => $this->getPermissionNames(),
+            'permissions'   => $this->permissions,
         ];
     }
 }
