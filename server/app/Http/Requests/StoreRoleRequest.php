@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class StoreRoleRequest extends FormRequest
 {
@@ -31,10 +32,10 @@ class StoreRoleRequest extends FormRequest
     public function rules()
     {
         return [
-            'name'          => ['required', 'min:3', 'max:50', 'alpha_dash'],
-            'display_name'  => ['required', 'min:3', 'max:50', 'regex:/^[\pL\s]+$/u'],
-            'color'         => ['required', 'size:6', 'alpha_num'],
-            'permissions'   => ['required', 'array', 'exists:Spatie\Permission\Models\Permission,name'],
+            'name'          => ['required', Rule::unique('roles')->ignore($this->role), 'min:3', 'max:20', 'alpha_dash'],
+            'display_name'  => ['required', Rule::unique('roles')->ignore($this->role), 'min:3', 'max:20', 'regex:/^[\pL\s]+$/u'],
+            'color'         => ['required', 'size:8', 'alpha_num'],
+            'permissions'   => ['required', 'array', 'exists:Spatie\Permission\Models\Permission,id']
         ];
     }
 }
