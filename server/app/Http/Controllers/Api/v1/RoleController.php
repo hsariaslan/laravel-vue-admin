@@ -21,7 +21,6 @@ class RoleController extends Controller
             'name'          => slugify($request->name),
             'display_name'  => $request->display_name,
             'color'         => $request->color,
-            'guard'         => 'web',
         ]);
         $role->givePermissionTo($request->permissions);
         return new RoleResource($role);
