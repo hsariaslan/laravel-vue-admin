@@ -25,7 +25,7 @@ class RolePermissionSeeder extends Seeder
         $role1 = Role::create([
             'name'          => 'admin',
             'display_name'  => 'Admin',
-            'color'         => 'EF4444', // tw-red-500
+            'color'         => 'EF4444FF', // tw-red-500
         ]);
 
         // All permissions
@@ -71,7 +71,7 @@ class RolePermissionSeeder extends Seeder
         $role2 = Role::create([
             'name'          => 'editor',
             'display_name'  => 'Editor',
-            'color'         => '10B981', // tw-green-500
+            'color'         => '10B981FF', // tw-green-500
         ]);
 
         // Editor permissions
@@ -104,7 +104,7 @@ class RolePermissionSeeder extends Seeder
         $role3 = Role::create([
             'name'          => 'member',
             'display_name'  => 'Member',
-            'color'         => '3B82F6', // tw-blue-500
+            'color'         => '3B82F6FF', // tw-blue-500
         ]);
 
         // Member permissions

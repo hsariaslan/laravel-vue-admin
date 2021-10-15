@@ -73,7 +73,7 @@
   }
 
   .chip {
-    @apply tw-text-white tw-py-1 tw-px-2 tw-m-1 tw-rounded-full !important
+    @apply tw-py-1 tw-px-2 tw-m-1 tw-rounded-full !important
   }
   
 }
