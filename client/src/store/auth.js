@@ -5,49 +5,11 @@ axios.defaults.baseURL = process.env.VUE_APP_API_URL;
 const auth = {
   namespaced: true,
 
-  state: () => ({
-    login       : false,
-    username    : null,
-    password    : null,
-    rememberMe  : false,
-    errors      : [],
-  }),
+  state: () => ({}),
 
-  getters: {
-    login: state => {
-      return state.login;
-    },
+  getters: {},
 
-    username: state => {
-      return state.username;
-    },
-
-    password: state => {
-      return state.password;
-    },
-
-    rememberMe: state => {
-      return state.rememberMe;
-    },
-
-    errors: state => {
-      return state.errors;
-    },
-  },
-
-  mutations: {
-    login(state, payload) {
-      state.login = payload;
-    },
-
-    logout(state) {
-      state.login = false;
-    },
-
-    errors(state, errors) {
-      state.errors = errors;
-    },
-  },
+  mutations: {},
 
   actions: {
     login({ }, credentials) {
@@ -97,29 +59,7 @@ const auth = {
       });
     },
 
-    profile({ }) {
-      return new Promise((resolve, reject) => {
-        axios.post('/profile').then((response) => {
-          let user = response.data.data;
-
-          if(credentials.rememberMe === true) {
-            localStorage.setItem('user', user);
-            sessionStorage.removeItem('user');
-          } else {
-            sessionStorage.setItem('user', user);
-            localStorage.removeItem('user');
-          }
-        })
-        .then(() => {
-          resolve('/');
-        })
-        .catch((error) => {
-          reject(error);
-        });
-      });
-    },
-
-    logout({ commit }) {
+    logout({ }) {
       return new Promise((resolve, reject) => {
         axios.post('/logout')
         .then(() => {
@@ -136,17 +76,12 @@ const auth = {
           sessionStorage.removeItem(userStorageName + 'surname');
           sessionStorage.removeItem(userStorageName + 'roles');
           sessionStorage.removeItem(userStorageName + 'permissions');
-          commit('logout');
           resolve('/login');
         })
         .catch((error) => {
           reject(error);
         });
       });
-    },
-
-    pushError({ commit }, errors) {
-      commit('errors', errors);
     },
   },
 }
