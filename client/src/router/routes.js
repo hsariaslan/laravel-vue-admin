@@ -1,4 +1,5 @@
 import auth from '@/middleware/auth';
+import DashboardLayout from '@/views/layouts/Dashboard.vue';
 
 const authRoutes = {
   path: '/',
@@ -20,7 +21,7 @@ const authRoutes = {
 
 const users = {
   path: '/users',
-  component: () => import('@/views/layouts/Dashboard.vue'),
+  component: DashboardLayout,
   children: [
     {
       path: '',
@@ -64,11 +65,103 @@ const users = {
   ],
 };
 
+const roles = {
+  path: '/roles',
+  component: DashboardLayout,
+  children: [
+    {
+      path: '',
+      name: 'Roles',
+      component: () => import('@/views/roles/Roles.vue'),
+      meta: {
+        middleware: auth,
+        permission: 'list_roles',
+      },
+    },
+
+    {
+      path: 'new',
+      name: 'NewRole',
+      component: () => import('@/views/roles/New.vue'),
+      meta: {
+        middleware: auth,
+        permission: 'create_role',
+      },
+    },
+
+    {
+      path: ':id',
+      name: 'ShowRole',
+      component: () => import('@/views/roles/Show.vue'),
+      meta: {
+        middleware: auth,
+        permission: 'show_role',
+      },
+    },
+
+    {
+      path: ':id/edit',
+      name: 'EditRole',
+      component: () => import('@/views/roles/Edit.vue'),
+      meta: {
+        middleware: auth,
+        permission: 'update_role',
+      },
+    },
+  ],
+};
+
+const permissions = {
+  path: '/permissions',
+  component: DashboardLayout,
+  children: [
+    {
+      path: '',
+      name: 'Permissions',
+      component: () => import('@/views/permissions/Permissions.vue'),
+      meta: {
+        middleware: auth,
+        permission: 'list_permissions',
+      },
+    },
+
+    {
+      path: 'new',
+      name: 'NewPermission',
+      component: () => import('@/views/permissions/New.vue'),
+      meta: {
+        middleware: auth,
+        permission: 'create_permission',
+      },
+    },
+
+    {
+      path: ':id',
+      name: 'ShowPermission',
+      component: () => import('@/views/permissions/Show.vue'),
+      meta: {
+        middleware: auth,
+        permission: 'show_permission',
+      },
+    },
+
+    {
+      path: ':id/edit',
+      name: 'EditPermission',
+      component: () => import('@/views/permissions/Edit.vue'),
+      meta: {
+        middleware: auth,
+        permission: 'update_permission',
+      },
+    },
+  ],
+};
+
 const routes = [
   {
     path: '/',
     redirect: '/dashboard',
-    component: () => import('@/views/layouts/Dashboard.vue'),
+    component: DashboardLayout,
     children: [
       {
         path: 'dashboard',
@@ -97,30 +190,12 @@ const routes = [
           middleware: auth,
         },
       },
-
-      {
-        path: 'roles',
-        name: 'Roles',
-        component: () => import('@/views/Roles.vue'),
-        meta: {
-          middleware: auth,
-          permission: 'list_roles',
-        },
-      },
-
-      {
-        path: 'permissions',
-        name: 'Permissions',
-        component: () => import('@/views/Permissions.vue'),
-        meta: {
-          middleware: auth,
-          permission: 'list_permissions',
-        },
-      },
     ],
   },
   authRoutes,
   users,
+  roles,
+  permissions,
 ];
 
 export default routes;
