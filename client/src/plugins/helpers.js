@@ -33,6 +33,22 @@ export default {
     }
   },
 
+  stringToSlug (str) {
+    str = str.toString()
+    str = str.replace(/^\s+|\s+$/g, '');
+    str = str.toLowerCase();
+  
+    var from = "àáäâèéëêìíïîòóöôùúüûñç·/_,:;";
+    var to   = "aaaaeeeeiiiioooouuuunc------";
+    for (var i=0, l=from.length ; i<l ; i++) {
+        str = str.replace(new RegExp(from.charAt(i), 'g'), to.charAt(i));
+    }
+    str = str.replace(/[^a-z0-9 -]/g, '')
+        .replace(/\s+/g, '_')
+        .replace(/-+/g, '-');
+    return str;
+  },
+
   decrypt(data) {
     const key         = CryptoJS.enc.Utf8.parse(process.env.VUE_APP_API_CRYPT_KEY);
     let decrypt       = CryptoJS.AES.decrypt(data, key, { mode: CryptoJS.mode.ECB });
@@ -102,6 +118,22 @@ export default {
       return this.decrypt(sessionStorage.getItem(data));
 
     }
+  },
+
+  colorLightOrDark(color) {
+    color = color.substring(1); // strip #
+    let rgb = parseInt(color, 16);  // convert rrggbb to decimal
+    let r = (rgb >> 16) & 0xff; // extract red
+    let g = (rgb >>  8) & 0xff; // extract green
+    let b = (rgb >>  0) & 0xff; // extract blue
+
+    let luma = 0.2126 * r + 0.7152 * g + 0.0722 * b; // per ITU-R BT.709
+
+    if (luma > 150) {
+      return "#333333";  // given color is light. return dark color
+    }
+
+    return "#FFFFFF";  // given color is dark. return light color
   },
 
   makeHash(length) {
