@@ -264,10 +264,10 @@
     },
 
     created() {
-      const userIdFromPath = parseInt(this.$route.fullPath.split('/')[2]);
-      this.user.id = userIdFromPath;
+      const idFromPath = parseInt(this.$route.fullPath.split('/')[2]);
+      this.user.id = idFromPath;
       
-      axios.get('http://localhost:8000/api/v1/users/' + userIdFromPath)
+      axios.get('http://localhost:8000/api/v1/users/' + idFromPath)
       .then((response) => {
         this.user = response.data.data;
         this.usernameTitle = this.user.username;
@@ -342,6 +342,7 @@
           .then(() => {
             this.user.roles = tempRoles;
             this.user.permissions = tempPermissions;
+            this.usernameTitle = this.user.username;
             this.loading = false;
             this.result = 1;
             this.$v.$reset();

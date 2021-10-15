@@ -7,7 +7,8 @@
       sort-by="id"
       dense
       class="elevation-1"
-      :items-per-page="15"
+      :items-per-page="25"
+      :footer-props="{ itemsPerPageOptions: [10, 15,  25,  50, 100, -1,] }"
       :loading="loading"
       loading-text="Loading... Please wait"
     >
@@ -54,7 +55,7 @@
           <span
             v-for="(role, idx) in item.roles"
             :key="idx"
-            :style="'background-color:' + role.color"
+            :style="`background-color:${role.color}; color:${$helpers.colorLightOrDark(role.color.substr(1,6))}`"
             class="chip"
           >{{ role.display_name }}</span>
         </div>
@@ -77,13 +78,13 @@
           >
             <div v-if="!expandedPermissions.includes(datas.indexOf(item))">
               <div
-                v-if="idx < 3"
+                v-if="idx < displayingPermissionsPerRow"
                 class="permission-in-table"
               >
                 {{ permission.display_name }}
               </div>
               <div
-                v-else-if="idx === 3"
+                v-else-if="idx === displayingPermissionsPerRow"
                 class="permission-in-table tw-cursor-pointer tw-bg-blue-200 hover:tw-bg-white"
                 @click="expandPermissions(datas.indexOf(item))"
               >
@@ -106,7 +107,7 @@
         </div>
       </template>
       <template v-slot:item.actions="{ item }">
-        <div class="tw-flex tw-items-end">
+        <div class="tw-flex tw-items-end tw-justify-end">
           <router-link :to="`/users/${item.id}`" class="mr-2">
             <v-icon small title="Show" class="hover:tw-text-blue-500">mdi-eye</v-icon>
           </router-link>
@@ -139,6 +140,7 @@
       ],
       tableSearch: '',
       loading: true,
+      displayingPermissionsPerRow: 3,
       expandedPermissions: [],
       dialog: false,
       deletingIndex: -1,
@@ -151,6 +153,9 @@
         this.loading = false;
       })
       .catch((error) => {
+        if(error.response.status === 401) {
+          this.$router.push('Logout');
+        }
         console.log(error);
       });
     },

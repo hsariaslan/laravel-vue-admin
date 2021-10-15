@@ -23,7 +23,7 @@
               <span
                 v-for="(role, idx) in user.roles"
                 :key="idx"
-                :style="'background-color:'+role.color"
+                :style="`background-color:${role.color}; color:${$helpers.colorLightOrDark(role.color.substr(1,6))}`"
                 class="chip"
               >{{ role.display_name }}</span>
             </div>
@@ -93,9 +93,9 @@
     }),
 
     created() {
-      const userIdFromPath = parseInt(this.$route.fullPath.split('/')[2]);
+      const idFromPath = parseInt(this.$route.fullPath.split('/')[2]);
       
-      axios.get('http://localhost:8000/api/v1/users/' + userIdFromPath)
+      axios.get('http://localhost:8000/api/v1/users/' + idFromPath)
       .then((response) => {
         this.user = response.data.data;
       })
