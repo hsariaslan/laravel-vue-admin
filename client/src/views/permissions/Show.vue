@@ -94,6 +94,7 @@
       axios.get('http://localhost:8000/api/v1/permissions/' + idFromPath)
       .then((response) => {
         this.permission = response.data.data;
+        this.$store.dispatch('breadcrumbTitle', this.permission.display_name);
       })
       .catch((error) => {
         console.log(error);

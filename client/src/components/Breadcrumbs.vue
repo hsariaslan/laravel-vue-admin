@@ -15,7 +15,9 @@
 </template>
 
 <script>
-  import titleCase from 'ap-style-title-case'
+  import { mapGetters } from 'vuex';
+  import titleCase from 'ap-style-title-case';
+  
   export default {
     name: 'Breadcrumbs',
     props: {
@@ -25,32 +27,45 @@
       },
     },
     computed: {
+      ...mapGetters({ breadcrumbTitle: 'breadcrumbTitle' }),
+
       crumbs() {
-        const fullPath = this.$route.fullPath
+        const fullPath = this.$route.fullPath;
         const params = fullPath.startsWith('/')
         ? fullPath.substring(1).split('/')
-        : fullPath.split('/')
-        const crumbs = []
+        : fullPath.split('/');
+        const crumbs = [];
+        let path = '', i = 0;
 
-        let path = ''
-
-        params.forEach((param, index) => {
-          path = `${path}/${param}`
-          const match = this.$router.match(path)
-
-          if (match.name !== null) {
-            crumbs.push({
-              title: titleCase(param.replace(/-/g, ' ')),
-              ...match,
-            })
-          }
-        })
-
-        if(crumbs[0].path == "/") {
-          crumbs[0].title = "Dashboard"
+        if(params.length === 1) {
+          this.$store.dispatch('breadcrumbTitle', ' ');
         }
 
-        return crumbs
+        params.forEach((param, index) => {
+          path = `${path}/${param}`;
+          const match = this.$router.match(path);
+
+          if (match.name !== null) {
+            if(i === 1 && this.$helpers.isNotNull(this.breadcrumbTitle)) {
+              crumbs.push({
+                title: this.breadcrumbTitle,
+                ...match,
+              });
+            } else {
+              crumbs.push({
+                title: titleCase(param.replace(/-/g, ' ')),
+                ...match,
+              });
+            }
+            i ++;
+          }
+        });
+
+        if(crumbs[0].path == "/") {
+          crumbs[0].title = "Dashboard";
+        }
+
+        return crumbs;
       },
     },
   }

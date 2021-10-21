@@ -5,13 +5,27 @@ import auth from "@/store/auth";
 Vue.use(Vuex)
 
 export default new Vuex.Store({
-  state: {},
+  state: {
+    breadcrumbTitle: ''
+  },
 
-  getters: {},
+  getters: {
+    breadcrumbTitle: state => {
+      return state.breadcrumbTitle;
+    },
+  },
 
-  mutations: {},
+  mutations: {
+    breadcrumbTitle(state, title) {
+      state.breadcrumbTitle = title;
+    },
+  },
 
-  actions: {},
+  actions: {
+    breadcrumbTitle({ commit }, title) {
+      commit('breadcrumbTitle', title);
+    },
+  },
 
   modules: {
     auth,

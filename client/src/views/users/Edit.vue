@@ -266,7 +266,6 @@
 
     created() {
       const loggedUser = this.loggedUser.roles[0];
-
       const idFromPath = parseInt(this.$route.fullPath.split('/')[2]);
       this.user.id = idFromPath;
       
@@ -277,6 +276,7 @@
         } else {
           this.user = response.data.data;
           this.usernameTitle = this.user.username;
+          this.$store.dispatch('breadcrumbTitle', this.usernameTitle);
         }
       })
       .catch((error) => {

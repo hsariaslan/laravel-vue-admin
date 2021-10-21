@@ -125,6 +125,7 @@
       axios.get('http://localhost:8000/api/v1/users/' + idFromPath)
       .then((response) => {
         this.user = response.data.data;
+        this.$store.dispatch('breadcrumbTitle', this.user.username);
       })
       .catch((error) => {
         console.log(error);

@@ -226,6 +226,7 @@
       .then((response) => {
         this.role = response.data.data;
         this.roleTitle = this.role.display_name;
+        this.$store.dispatch('breadcrumbTitle', this.role.display_name);
       })
       .catch((error) => {
         console.log(error);

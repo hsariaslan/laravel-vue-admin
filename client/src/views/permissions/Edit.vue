@@ -175,6 +175,7 @@
       .then((response) => {
         this.permission = response.data.data;
         this.permissionTitle = this.permission.display_name;
+        this.$store.dispatch('breadcrumbTitle', this.permission.display_name);
       })
       .catch((error) => {
         console.log(error);

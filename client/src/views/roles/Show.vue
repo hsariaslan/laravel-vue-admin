@@ -67,6 +67,7 @@
       axios.get('http://localhost:8000/api/v1/roles/' + idFromPath)
       .then((response) => {
         this.role = response.data.data;
+        this.$store.dispatch('breadcrumbTitle', this.role.display_name);
       })
       .catch((error) => {
         console.log(error);
