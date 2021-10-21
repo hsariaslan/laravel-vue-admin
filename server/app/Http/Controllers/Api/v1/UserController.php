@@ -7,16 +7,16 @@ use Illuminate\Support\Facades\Hash;
 use App\Models\User;
 use App\Http\Resources\UserResource;
 use App\Http\Requests\StoreUserRequest;
+use App\Http\Resources\RoleResource;
 
 class UserController extends Controller
 {
     public function index ()
     {
-        $users = User::whereHas('roles', function ($query) {
+        $users = User::whereDoesntHave('roles', function ($query) {
             $loggedUser = auth()->user();
-            $loggedUserRoles = $loggedUser->roles->sortBy('scope');
-            $loggedUserScope = $loggedUserRoles[0]->scope;
-            return $query->where('scope', '>=', $loggedUserScope);
+            $loggedUserRole = $loggedUser->roles()->select('scope')->orderBy('scope')->first();
+            return $query->where('scope', '<', $loggedUserRole->scope);
         })->get();
 
         return UserResource::collection($users);
@@ -45,12 +45,11 @@ class UserController extends Controller
     public function update (StoreUserRequest $request, User $user)
     {
         $loggedUser = auth()->user();
-        $loggedUserRoles = $loggedUser->roles->sortBy('scope');
-        $loggedUserScope = $loggedUserRoles[0]->scope;
+        $loggedUserRole = $loggedUser->roles()->select('name', 'scope')->orderBy('scope')->first();
         $userRoles = $user->roles->sortBy('scope');
         $userScope = $userRoles[0]->scope;
 
-        if($loggedUserScope < $userScope) {
+        if($loggedUserRole->name == 'admin' || $loggedUserRole->scope < $userScope) {
             $user->username = $request->username;
             $user->email    = $request->email;
             $user->name     = $request->name;
@@ -73,12 +72,11 @@ class UserController extends Controller
     public function destroy (User $user)
     {
         $loggedUser = auth()->user();
-        $loggedUserRoles = $loggedUser->roles->sortBy('scope');
-        $loggedUserScope = $loggedUserRoles[0]->scope;
+        $loggedUserRole = $loggedUser->roles()->select('name', 'scope')->orderBy('scope')->first();
         $userRoles = $user->roles->sortBy('scope');
         $userScope = $userRoles[0]->scope;
 
-        if($loggedUserScope < $userScope) {
+        if($loggedUserRole->name == 'admin' || $loggedUserRole->scope < $userScope) {
             $user->syncRoles();
             $user->syncPermissions();
             $user->delete();

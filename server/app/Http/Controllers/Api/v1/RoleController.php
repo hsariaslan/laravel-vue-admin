@@ -11,10 +11,9 @@ class RoleController extends Controller
 {
     public function index ()
     {
-        $user = auth()->user();
-        $userRoles = $user->roles->sortBy('scope');
-        $scope = $userRoles[0]->scope;
-        $roles = Role::where('scope', '>=', $scope)->get();
+        $loggedUser = auth()->user();
+        $loggedUserRole = $loggedUser->roles()->select('scope')->orderBy('scope')->first();
+        $roles = Role::where('scope', '>=', $loggedUserRole->scope)->orderBy('scope', 'asc')->get();
 
         return RoleResource::collection($roles);
     }

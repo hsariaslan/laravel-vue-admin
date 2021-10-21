@@ -54,7 +54,7 @@ class User extends Authenticatable
         $roles = [];
         $i = 0;
 
-        foreach($this->roles()->get() as $role) {
+        foreach($this->roles()->orderBy('scope')->get() as $role) {
             $roles[$i] = [
                 $role->id,
                 $role->name,

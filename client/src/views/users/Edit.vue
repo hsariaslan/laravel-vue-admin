@@ -245,7 +245,7 @@
       usernameTitle: '',
       roles: [],
       permissions: [],
-      disabled: true,
+      disabled: false,
       loading: false,
       result: false,
       errors: null,
@@ -265,14 +265,14 @@
     },
 
     created() {
-      const loggedUserScope = this.loggedUser.roles[0][4];
+      const loggedUser = this.loggedUser.roles[0];
 
       const idFromPath = parseInt(this.$route.fullPath.split('/')[2]);
       this.user.id = idFromPath;
       
       axios.get('http://localhost:8000/api/v1/users/' + idFromPath)
       .then((response) => {
-        if(loggedUserScope >= response.data.data.roles[0].scope) {
+        if(loggedUser[1] !== 'admin' && loggedUser[4] >= response.data.data.roles[0].scope) {
           this.$router.back();
         } else {
           this.user = response.data.data;

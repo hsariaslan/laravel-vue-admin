@@ -63,7 +63,7 @@
           <span
             v-for="(role, idx) in item.roles"
             :key="idx"
-            :style="`background-color:${role.color}; color:${$helpers.colorLightOrDark(role.color.substr(1,6))}`"
+            :style="`background-color:#${role.color}; color:${$helpers.colorLightOrDark(role.color.substr(1,6))}`"
             class="chip"
           >{{ role.display_name }}</span>
         </div>
@@ -74,7 +74,7 @@
           <div v-if="item.permissions.length > 0" class="tw-float-left tw-cursor-help">
             <v-icon small color="orange" title="Direct permissions defined to this user">mdi-alert-circle-outline</v-icon>
           </div>
-          <div v-if="item.roles[0].name === 'admin'" class="tw-float-left">
+          <div v-if="item.roles[0].display_name === 'Admin'" class="tw-float-left">
             <i>All permissions</i>
             <i v-if="item.all_permissions.length > 0" class="tw-text-red-500 tw-text-xs">
               (Defining roles or permissions for this user are unnecessary since an admin already has all permissions)
@@ -128,12 +128,12 @@
               <v-icon small title="Show" class="hover:tw-text-blue-500">mdi-eye</v-icon>
             </router-link>
           </div>
-          <div class="tw-float-left tw-ml-2" v-can="'update_user'" v-if="loggedUser.roles[0][4] < item.roles[0].scope">
+          <div class="tw-float-left tw-ml-2" v-can="'update_user'" v-if="loggedUser.roles[0][1] === 'admin' || loggedUser.roles[0][4] < item.roles[0].scope">
             <router-link :to="`/users/${item.id}/edit`">
             <v-icon small title="Edit" class="hover:tw-text-green-500">mdi-pencil</v-icon>
           </router-link>
           </div>
-          <div class="tw-float-left tw-ml-2" v-can="'delete_user'" v-if="loggedUser.roles[0][4] < item.roles[0].scope">
+          <div class="tw-float-left tw-ml-2" v-can="'delete_user'" v-if="loggedUser.roles[0][1] === 'admin' || loggedUser.roles[0][4] < item.roles[0].scope">
             <v-icon small title="Delete" @click="toggleDialog(datas.indexOf(item))" class="hover:tw-text-red-500">mdi-delete</v-icon>
           </div>
         </div>
