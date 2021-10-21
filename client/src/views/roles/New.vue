@@ -195,7 +195,7 @@
         id            : null,
         name          : '',
         display_name  : '',
-        scope         : '',
+        scope         : 100,
         color         : '',
         permissions   : [],
       },

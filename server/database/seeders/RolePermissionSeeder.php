@@ -58,7 +58,7 @@ class RolePermissionSeeder extends Seeder
             'name'          => 'admin',
             'display_name'  => 'Admin',
             'color'         => 'EF4444FF', // tw-red-500
-            'scope'         => 1,
+            'scope'         => 0,
         ]);
 
         // Insert all permissions to database. Admin has all permissions

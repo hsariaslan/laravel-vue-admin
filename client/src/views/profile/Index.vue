@@ -9,7 +9,7 @@
             <span
               v-for="(role, idx) in profile.roles"
               :key="idx"
-              :style="`background-color:${role.color}; color:${$helpers.colorLightOrDark(role.color.substr(1,6))}`"
+              :style="`background-color:#${role.color}; color:${$helpers.colorLightOrDark(role.color.substr(1,6))}`"
               class="chip tw-text-sm"
             >{{ role.display_name }}</span>
           </div>

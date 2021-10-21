@@ -69,7 +69,7 @@ class CreatePermissionTables extends Migration
             $table->string('name', 20)->unique();
             $table->string('display_name', 20)->unique();
             $table->string('color', 8);
-            $table->tinyInteger('scope');
+            $table->unsignedInteger('scope');
             $table->string('guard_name', 7)->default('sanctum');
             $table->timestamps();
             if ($teams || config('permission.testing')) {
