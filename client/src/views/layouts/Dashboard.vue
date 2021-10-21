@@ -49,13 +49,10 @@
         class="mx-auto tw-absolute tw-top-16 tw-right-0 tw-bg-sideBar-700 tw-text-trueGray-550 tw-border-0 tw-rounded-b-md tw-rounded-t-none tw-z-10"
       >
         <div>
-          <v-navigation-drawer
-          dark
-            class="tw-bg-transparent tw-w-full"
-          >
+          <v-navigation-drawer dark class="tw-bg-transparent tw-w-full">
             <v-divider></v-divider>
             <router-link to="/profile" class="profile" @click="settings = false">
-              <img src="@/assets/img/profile.jpg" alt="profile.jpg" class="profile-img">
+              <img src="@/assets/img/profile.jpg" alt="profile.jpg" class="profile-img tw-w-12 tw-max-h-12">
               <span>{{user.name + ' ' + user.surname}}</span>
               <v-icon color="grey" class="tw-w-4">mdi-circle-small</v-icon>
               <div
@@ -112,7 +109,8 @@ export default {
   },
   
   created() {
-    this.user = this.$helpers.getUserDataFromStorage();
+    this.user = this.$store.getters["auth/login"];
+    // console.log(this.user.permissions);
 
     if(this.$helpers.isNotNull(this.user.permissions)) {
       this.user.permissions.forEach(permission => {
@@ -132,13 +130,25 @@ export default {
           case 'list_roles' || 'create_role' || 'show_role' || 'update_role' || 'delete_role': this.menuLinks.push({
             title: 'Roles',
             link: '/roles',
-            icon: 'mdi-account-details'
+            icon: 'mdi-account-star'
           }); break;
 
           case 'list_permissions' || 'create_permission' || 'show_permission' || 'update_permission' || 'delete_permission': this.menuLinks.push({
             title: 'Permissions',
             link: '/permissions',
             icon: 'mdi-account-check'
+          }); break;
+
+          case 'list_permission_categories' || 'create_permission_category' || 'show_permission_category' || 'update_permission_category' || 'delete_permission_category': this.menuLinks.push({
+            title: 'Permission Categories',
+            link: '/permission-categories',
+            icon: 'mdi-text-account'
+          }); break;
+
+          case 'list_permission_actions' || 'create_permission_action' || 'show_permission_action' || 'update_permission_action' || 'delete_permission_action': this.menuLinks.push({
+            title: 'Permission Actions',
+            link: '/permission-actions',
+            icon: 'mdi-account-arrow-right'
           }); break;
         }
       });

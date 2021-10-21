@@ -4,8 +4,9 @@
       :headers="headers"
       :items="datas"
       :search="tableSearch"
-      sort-by="id"
+      sort-by="no"
       dense
+      group-by="category.name"
       class="elevation-1"
       :items-per-page="25"
       :footer-props="{ itemsPerPageOptions: [10, 15,  25,  50, 100, -1,] }"
@@ -19,7 +20,7 @@
             dark
             class="mb-2"
             to="/permissions/new"
-            v-can="'create_role'"
+            v-can="'create_permission'"
           >
             New Permission
           </v-btn>
@@ -32,9 +33,15 @@
             hide-details
           ></v-text-field>
           
-          <v-dialog v-model="dialog" max-width="600px" persistent>
+          <v-dialog v-model="dialog" max-width="700px" persistent>
             <v-card>
-              <v-card-title class="text-h5">Are you sure you want to delete this permission?</v-card-title>
+              <v-card-title>
+                <span class="text-h5">Are you sure you want to delete this permission?</span>
+                <span class="tw-text-red-600">
+                  <v-icon class="tw-text-red-600 tw--mt-1">mdi-alert</v-icon>
+                  Warning: This is not recommended since can break a feature!
+                </span>
+              </v-card-title>
               <v-card-actions>
                 <v-spacer></v-spacer>
                 <template>
@@ -50,15 +57,34 @@
 
         </v-toolbar>
       </template>
+      
+      <template v-slot:item.no="{ item }">
+        {{ datas.indexOf(item) + 1 }}
+      </template>
+      
+      <template v-slot:item.action="{ item }">
+        {{ item.action.name }}
+      </template>
+      
+      <template v-slot:item.category="{ item }">
+        {{ item.category.name }}
+      </template>
+
       <template v-slot:item.actions="{ item }">
         <div class="tw-flex tw-items-end tw-justify-end">
-          <router-link :to="`/permissions/${item.id}`" class="mr-2">
-            <v-icon small title="Show" class="hover:tw-text-blue-500">mdi-eye</v-icon>
-          </router-link>
-          <router-link :to="`/permissions/${item.id}/edit`" class="mr-2">
-            <v-icon small title="Edit" class="hover:tw-text-green-500">mdi-pencil</v-icon>
-          </router-link>
-          <v-icon small @click="toggleDialog(datas.indexOf(item))">mdi-delete</v-icon>
+          <div class="tw-float-left" v-can="'show_permission'">
+            <router-link :to="`/permissions/${item.id}`">
+              <v-icon small title="Show" class="hover:tw-text-blue-500">mdi-eye</v-icon>
+            </router-link>
+          </div>
+          <div class="tw-float-left tw-ml-2" v-can="'update_permission'" v-if="loggedUser.permissions.includes(item.name)">
+            <router-link :to="`/permissions/${item.id}/edit`">
+              <v-icon small title="Edit" class="hover:tw-text-green-500">mdi-pencil</v-icon>
+            </router-link>
+          </div>
+          <div class="tw-float-left tw-ml-2" v-can="'delete_permission'" v-if="loggedUser.permissions.includes(item.name)">
+            <v-icon small title="Delete" @click="toggleDialog(datas.indexOf(item))" class="hover:tw-text-red-500">mdi-delete</v-icon>
+          </div>
         </div>
       </template>
     </v-data-table>
@@ -66,7 +92,8 @@
 </template>
 
 <script>
-  const axios = require('axios');
+  import { mapGetters } from 'vuex';
+  import axios from 'axios';
 
   export default {
     name: 'Permissions',
@@ -74,10 +101,13 @@
     data: () => ({
       datas:[],
       headers : [
-        { text: 'ID', align: 'start', value: 'id' },
-        { text: 'Name'            , value: 'name' },
-        { text: 'Displaying Name' , value: 'display_name' },
-        { text: 'Actions'         , value: 'actions', align: 'right', sortable: false },
+        { text: 'No'                , value: 'no', },
+        { text: 'Name'              , value: 'name', },
+        { text: 'Displaying Name'   , value: 'display_name', },
+        { text: 'Action'            , value: 'action' },
+        { text: 'Category'          , value: 'category' },
+        { text: 'Group'             , value: 'group' },
+        { text: 'Actions'           , value: 'actions', align: 'right', sortable: false, },
       ],
       tableSearch: '',
       loading: true,
@@ -92,9 +122,6 @@
         this.loading = false;
       })
       .catch((error) => {
-        if(error.response.status === 401) {
-          this.$router.push('Logout');
-        }
         console.log(error);
       });
     },
@@ -119,6 +146,10 @@
           this.deletingIndex = index;
         }
       },
+    },
+
+    computed: {
+      ...mapGetters({loggedUser: 'auth/login'})
     },
   }
 </script>

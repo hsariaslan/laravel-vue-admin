@@ -4,7 +4,7 @@
       :headers="headers"
       :items="datas"
       :search="tableSearch"
-      sort-by="id"
+      sort-by="no"
       dense
       class="elevation-1"
       :items-per-page="25"
@@ -50,6 +50,14 @@
 
         </v-toolbar>
       </template>
+      
+      <template v-slot:item.no="{ item }">
+        {{ datas.indexOf(item) + 1 }}
+        <span v-if="loggedUser.email == item.email">
+          <v-icon small title="This is your account" class="tw-text-yellow-600 hover:tw-text-indigo-500">mdi-information</v-icon>
+        </span>
+      </template>
+
       <template v-slot:item.roles="{ item }">
         <div class="tw-flex-wrap">
           <span
@@ -60,6 +68,7 @@
           >{{ role.display_name }}</span>
         </div>
       </template>
+
       <template v-slot:item.permissions="{ item }">
         <div class="tw-flex-wrap tw-items-center">
           <div v-if="item.permissions.length > 0" class="tw-float-left tw-cursor-help">
@@ -74,47 +83,59 @@
           <div
             v-for="(permission, idx) in item.all_permissions"
             :key="idx"
-            class="tw-m-1 tw-float-left"
+            class="tw-float-left"
           >
             <div v-if="!expandedPermissions.includes(datas.indexOf(item))">
-              <div
+              <span
                 v-if="idx < displayingPermissionsPerRow"
-                class="permission-in-table"
+                class="chip tw-bg-gray-200"
               >
                 {{ permission.display_name }}
-              </div>
-              <div
+              </span>
+              <span
                 v-else-if="idx === displayingPermissionsPerRow"
-                class="permission-in-table tw-cursor-pointer tw-bg-blue-200 hover:tw-bg-white"
+                class="chip tw-cursor-pointer tw-bg-blue-200 hover:tw-bg-white"
                 @click="expandPermissions(datas.indexOf(item))"
               >
                 {{ item.all_permissions.length - idx }} more...
-              </div>
+              </span>
             </div>
             <div v-else>
-              <div class="permission-in-table tw-float-left">
+              <span class="chip tw-bg-gray-200 tw-float-left">
                 {{ permission.display_name }}
-              </div>
-              <div
+              </span>
+              <span
                 v-if="idx === item.all_permissions.length - 1"
-                class="permission-in-table tw-ml-1 tw-float-left tw-cursor-pointer tw-bg-red-200 hover:tw-bg-white"
+                class="chip tw-float-left tw-cursor-pointer tw-bg-red-200 hover:tw-bg-white"
                 @click="collapsePermissions(datas.indexOf(item))"
               >
                 collapse
-              </div>
+              </span>
             </div>
           </div>
         </div>
       </template>
+
       <template v-slot:item.actions="{ item }">
-        <div class="tw-flex tw-items-end tw-justify-end">
-          <router-link :to="`/users/${item.id}`" class="mr-2">
-            <v-icon small title="Show" class="hover:tw-text-blue-500">mdi-eye</v-icon>
+        <div v-if="loggedUser.email == item.email" class="tw-flex tw-items-end tw-justify-end">
+          <router-link :to="`/profile`">
+            <v-icon small title="Show your profile" class="hover:tw-text-blue-500">mdi-account</v-icon>
           </router-link>
-          <router-link :to="`/users/${item.id}/edit`" class="mr-2">
+        </div>
+        <div v-else class="tw-flex tw-items-end tw-justify-end">
+          <div class="tw-float-left">
+            <router-link :to="`/users/${item.id}`" v-can="'show_user'">
+              <v-icon small title="Show" class="hover:tw-text-blue-500">mdi-eye</v-icon>
+            </router-link>
+          </div>
+          <div class="tw-float-left tw-ml-2" v-can="'update_user'" v-if="loggedUser.roles[0][4] < item.roles[0].scope">
+            <router-link :to="`/users/${item.id}/edit`">
             <v-icon small title="Edit" class="hover:tw-text-green-500">mdi-pencil</v-icon>
           </router-link>
-          <v-icon small title="Delete" @click="toggleDialog(datas.indexOf(item))" class="hover:tw-text-red-500">mdi-delete</v-icon>
+          </div>
+          <div class="tw-float-left tw-ml-2" v-can="'delete_user'" v-if="loggedUser.roles[0][4] < item.roles[0].scope">
+            <v-icon small title="Delete" @click="toggleDialog(datas.indexOf(item))" class="hover:tw-text-red-500">mdi-delete</v-icon>
+          </div>
         </div>
       </template>
     </v-data-table>
@@ -122,14 +143,15 @@
 </template>
 
 <script>
-  const axios = require('axios');
+  import { mapGetters } from 'vuex';
+  import axios from 'axios';
 
   export default {
     name: 'Users',
     data: () => ({
       datas:[],
       headers: [
-        { text: 'ID',           value: 'id', },
+        { text: 'No',           value: 'no', },
         { text: 'Name',         value: 'name', },
         { text: 'Surname',      value: 'surname', },
         { text: 'Username',     value: 'username' },
@@ -153,9 +175,6 @@
         this.loading = false;
       })
       .catch((error) => {
-        if(error.response.status === 401) {
-          this.$router.push('Logout');
-        }
         console.log(error);
       });
     },
@@ -191,6 +210,10 @@
           this.deletingIndex = index;
         }
       },
+    },
+
+    computed: {
+      ...mapGetters({loggedUser: 'auth/login'})
     },
   }
 </script>

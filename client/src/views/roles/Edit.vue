@@ -17,7 +17,7 @@
               <v-col
                 cols="12"
                 sm="12"
-                md="6"
+                md="4"
               >
                 <v-text-field
                   label="Role Display Name*"
@@ -28,10 +28,11 @@
                   @blur="input('display_name')"
                 ></v-text-field>
               </v-col>
+
               <v-col
                 cols="12"
                 sm="12"
-                md="6"
+                md="4"
               >
                 <v-text-field
                   label="Role Name*"
@@ -45,6 +46,25 @@
                   @blur="input('name')"
                 ></v-text-field>
               </v-col>
+
+              <v-col
+                cols="12"
+                sm="12"
+                md="4"
+              >
+                <v-text-field
+                  label="Scope*"
+                  type="number"
+                  hint="Scope means how the relevant role has the permissions extensively. Lower number means higher scope. Lower scope roles can't execute the actions of higher scope roles."
+                  persistent-hint
+                  v-model="role.scope"
+                  :error-messages="scopeErrors"
+                  @input="input('scope')"
+                  @blur="input('scope')"
+                  @keypress="isNumber($event)"
+                ></v-text-field>
+              </v-col>
+
               <v-col
                 cols="12"
                 sm="12"
@@ -80,6 +100,7 @@
                   </template>
                 </v-select>
               </v-col>
+
               <v-col
                 cols="12"
                 sm="12"
@@ -165,8 +186,8 @@
 
 <script>
   import { validationMixin } from 'vuelidate';
-  import { required, minLength, maxLength } from 'vuelidate/lib/validators';
-  const axios = require('axios');
+  import { required, minLength, maxLength, numeric, between, } from 'vuelidate/lib/validators';
+  import axios from 'axios';
 
   export default {
     data: () => ({
@@ -174,6 +195,7 @@
         id            : null,
         name          : '',
         display_name  : '',
+        scope         : '',
         color         : '',
         permissions   : [],
       },
@@ -190,6 +212,7 @@
       role: {
         name:         { required, minLength: minLength(3) , maxLength: maxLength(20), },
         display_name: { required, minLength: minLength(3) , maxLength: maxLength(20), },
+        scope:        { required, numeric, between: between(1, 255), },
         color:        { required, minLength: minLength(9) , maxLength: maxLength(9), },
         permissions:  { required, },
       }
@@ -243,7 +266,7 @@
           axios.patch('http://localhost:8000/api/v1/roles/' + this.role.id, this.role)
           .then(() => {
             this.role.permissions = tempPermissions;
-            this.roleTitle = this.roles.display_name;
+            this.roleTitle = this.role.display_name;
             this.loading = false;
             this.result = 1;
             this.$v.$reset();
@@ -268,6 +291,7 @@
             this.makeSlug();
           break;
           case 'name'         : this.$v.role.name.$touch(); break;
+          case 'scope'        : this.$v.role.scope.$touch(); break;
           case 'color'        : this.$v.role.color.$touch(); break;
           case 'permissions'  : this.$v.role.permissions.$touch(); break;
         }
@@ -276,6 +300,16 @@
 
       makeSlug() {
         this.role.name = this.$helpers.stringToSlug(this.role.display_name);
+      },
+
+      isNumber: function(evt) {
+        evt = (evt) ? evt : window.event;
+        var charCode = (evt.which) ? evt.which : evt.keyCode;
+        if (charCode > 31 && (charCode < 48 || charCode > 57)) {
+          evt.preventDefault();
+        } else {
+          return true;
+        }
       },
 
       toggle () {
@@ -306,6 +340,15 @@
         !this.$v.role.display_name.minLength && errors.push('Display Name must be minimum 3 characters long');
         !this.$v.role.display_name.maxLength && errors.push('Display Name must be at most 20 characters long');
         !this.$v.role.display_name.required && errors.push('Display Name is required.');
+        return errors;
+      },
+
+      scopeErrors () {
+        const errors = [];
+        if (!this.$v.role.scope.$dirty) return errors;
+        !this.$v.role.scope.numeric && errors.push('Scope must be numeric.');
+        !this.$v.role.scope.between && errors.push('Scope value must between 1 and 255.');
+        !this.$v.role.scope.required && errors.push('Scope is required.');
         return errors;
       },
 

@@ -14,25 +14,18 @@
         <v-card-text>
           <v-container>
             <v-row>
-              <v-col
-                cols="12"
-                sm="12"
-                md="6"
-              >
+              <v-col cols="12" sm="12" md="6">
                 <v-text-field
                   label="Permission Display Name*"
                   type="text"
                   v-model="permission.display_name"
                   :error-messages="display_nameErrors"
                   @input="input('display_name')"
-                  @blur="input('display_name')"
-                ></v-text-field>
+                  @blur="input('display_name')">
+                </v-text-field>
               </v-col>
-              <v-col
-                cols="12"
-                sm="12"
-                md="6"
-              >
+
+              <v-col cols="12" sm="12" md="6">
                 <v-text-field
                   label="Permission Name*"
                   type="text"
@@ -42,8 +35,47 @@
                   v-model="permission.name"
                   :error-messages="nameErrors"
                   @input="input('name')"
-                  @blur="input('name')"
-                ></v-text-field>
+                  @blur="input('name')">
+                </v-text-field>
+              </v-col>
+            </v-row>
+
+            <v-row>
+              <v-col cols="12" sm="12" md="4">
+                <v-select
+                  label="Action*"
+                  v-model="permission.action"
+                  :items="actions"
+                  :error-messages="actionErrors"
+                  @input="input('action')"
+                  @blur="input('action')"
+                  item-text="name"
+                  item-value="id">
+                </v-select>
+              </v-col>
+              
+              <v-col cols="12" sm="12" md="4">
+                <v-select
+                  label="Category*"
+                  v-model="permission.category"
+                  :items="categories"
+                  :error-messages="categoryErrors"
+                  @input="input('category')"
+                  @blur="input('category')"
+                  item-text="name"
+                  item-value="id">
+                </v-select>
+              </v-col>
+
+              <v-col cols="12" sm="12" md="4">
+                <v-select
+                  label="Group*"
+                  v-model="permission.group"
+                  :items="groups"
+                  :error-messages="groupErrors"
+                  @input="input('group')"
+                  @blur="input('group')">
+                </v-select>
               </v-col>
             </v-row>
 
@@ -56,20 +88,13 @@
         </v-card-text>
         <v-card-actions>
           <v-row>
-            <v-col
-              cols="12"
-              sm="9"
-              md="6"
-              lg="3"
-              class="tw-mx-auto"
-            >
+            <v-col cols="12" sm="9" md="6" lg="3" class="tw-mx-auto">
               <v-btn
                 type="submit"
                 :loading="loading"
                 :disabled="disabled"
                 color="primary"
-                class="tw-w-full"
-              >
+                class="tw-w-full">
                 Save
               </v-btn>
             </v-col>
@@ -82,9 +107,10 @@
           class="tw-mx-4 tw-mt-3"
           v-if="result === 1"
           dismissible
-          transition="scale-transition"
-        >
-          Permission created. <router-link :to="`/permissions/${permission.id}`" class="success-links">Show the permission</router-link> | <router-link to="/permissions" class="success-links">Return to permissions list</router-link>
+          transition="scale-transition">
+          Permission updated.
+          <router-link :to="`/permissions/${permission.id}`" class="success-links">Show the permission</router-link> |
+          <router-link to="/permissions" class="success-links">Return to permissions list</router-link>
         </v-alert>
 
         <v-alert
@@ -93,12 +119,10 @@
           class="tw-mx-4 tw-mt-3"
           v-if="result === 0"
           dismissible
-          transition="scale-transition"
-        >
+          transition="scale-transition">
           <div
             v-for="(error, id) in errors.errors"
-            :key="id"
-          >
+            :key="id">
             {{ error[0] }}
           </div>
         </v-alert>
@@ -109,8 +133,8 @@
 
 <script>
   import { validationMixin } from 'vuelidate';
-  import { required, minLength, maxLength } from 'vuelidate/lib/validators';
-  const axios = require('axios');
+  import { required, minLength, maxLength, } from 'vuelidate/lib/validators';
+  import axios from 'axios';
 
   export default {
     data: () => ({
@@ -118,8 +142,14 @@
         id            : null,
         name          : '',
         display_name  : '',
+        action        : '',
+        category      : '',
+        group         : 'cms',
       },
       permissionTitle: '',
+      actions: [],
+      categories: [],
+      groups: ['cms', 'product'],
       disabled: true,
       loading: false,
       result: false,
@@ -131,6 +161,9 @@
       permission: {
         name:         { required, minLength: minLength(3) , maxLength: maxLength(20), },
         display_name: { required, minLength: minLength(3) , maxLength: maxLength(20), },
+        action:       { required, },
+        category:     { required, },
+        group:        { required, minLength: minLength(1) , maxLength: maxLength(10), },
       }
     },
 
@@ -146,6 +179,22 @@
       .catch((error) => {
         console.log(error);
       });
+
+      axios.get('http://localhost:8000/api/v1/permission-actions')
+      .then((response) => {
+        this.actions = response.data.data;
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+
+      axios.get('http://localhost:8000/api/v1/permission-categories')
+      .then((response) => {
+        this.categories = response.data.data;
+      })
+      .catch((error) => {
+        console.log(error);
+      });
     },
 
     methods: {
@@ -157,8 +206,21 @@
         this.$v.$touch();
 
         if (!this.$v.$invalid) {
+          const tempAction = this.permission.action;
+          const tempCategory = this.permission.category;
+          
+          if(this.$helpers.isObject(this.permission.action)) {
+            this.permission.action = this.permission.action.id;
+          }
+
+          if(this.$helpers.isObject(this.permission.category)) {
+            this.permission.category = this.permission.category.id;
+          }
+          
           axios.patch('http://localhost:8000/api/v1/permissions/' + this.permission.id, this.permission)
           .then(() => {
+            this.permission.action = tempAction;
+            this.permission.category = tempCategory;
             this.permissionTitle = this.permission.display_name;
             this.loading = false;
             this.result = 1;
@@ -183,7 +245,10 @@
             this.$v.permission.display_name.$touch();
             this.makeSlug();
           break;
-          case 'name'         : this.$v.permission.name.$touch(); break;
+          case 'name': this.$v.permission.name.$touch(); break;
+          case 'action': this.$v.permission.action.$touch(); break;
+          case 'category': this.$v.permission.category.$touch(); break;
+          case 'group': this.$v.permission.group.$touch(); break;
         }
         this.disabled = this.$v.$invalid;
       },
@@ -209,6 +274,29 @@
         !this.$v.permission.display_name.minLength && errors.push('Display Name must be minimum 3 characters long');
         !this.$v.permission.display_name.maxLength && errors.push('Display Name must be at most 20 characters long');
         !this.$v.permission.display_name.required && errors.push('Display Name is required.');
+        return errors;
+      },
+
+      actionErrors () {
+        const errors = [];
+        if (!this.$v.permission.action.$dirty) return errors;
+        !this.$v.permission.action.required && errors.push('Action is required.');
+        return errors;
+      },
+
+      categoryErrors () {
+        const errors = [];
+        if (!this.$v.permission.category.$dirty) return errors;
+        !this.$v.permission.category.required && errors.push('Category is required.');
+        return errors;
+      },
+
+      groupErrors () {
+        const errors = [];
+        if (!this.$v.permission.group.$dirty) return errors;
+        !this.$v.permission.group.minLength && errors.push('Group must be minimum 1 characters long');
+        !this.$v.permission.group.maxLength && errors.push('Group must be at most 10 characters long');
+        !this.$v.permission.group.required && errors.push('Group is required.');
         return errors;
       },
     },

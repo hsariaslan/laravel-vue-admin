@@ -59,7 +59,8 @@ class User extends Authenticatable
                 $role->id,
                 $role->name,
                 $role->display_name,
-                $role->color
+                $role->color,
+                $role->scope
             ];
             $i ++;
         }

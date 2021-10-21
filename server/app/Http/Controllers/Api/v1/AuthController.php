@@ -17,17 +17,13 @@ class AuthController extends Controller
             return new ProfileResource($user);
         }
 
-        return response([
-            'message' => 'Email or password is wrong',
-        ], 401);
+        return response(['message' => 'Email or password is wrong'], 401);
     }
 
     public function logout()
     {
         Auth::logout();
 
-        return response([
-            'message' => 'Logged out'
-        ], 200);
+        return response(['message' => 'Logged out'], 200);
     }
 }

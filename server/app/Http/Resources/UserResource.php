@@ -3,8 +3,8 @@
 namespace App\Http\Resources;
 
 use Illuminate\Http\Resources\Json\JsonResource;
-use App\Http\Resources\RoleCollection;
-use App\Http\Resources\PermissionCollection;
+use App\Http\Resources\RoleResource;
+use App\Http\Resources\PermissionResource;
 
 class UserResource extends JsonResource
 {
@@ -22,9 +22,9 @@ class UserResource extends JsonResource
             'email'             => $this->email,
             'name'              => $this->name,
             'surname'           => $this->surname,
-            'roles'             => new RoleCollection($this->roles),
-            'permissions'       => new PermissionCollection($this->permissions),
-            'all_permissions'   => new PermissionCollection($this->getAllPermissions()),
+            'roles'             => RoleResource::collection($this->roles),
+            'permissions'       => PermissionResource::collection($this->permissions),
+            'all_permissions'   => PermissionResource::collection($this->getAllPermissions()),
         ];
     }
 }

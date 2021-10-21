@@ -69,15 +69,14 @@
   }
 
   .permission-in-table {
-    @apply tw-bg-gray-200 tw-py-1 tw-px-2 tw-rounded-full tw-float-left !important
+    @apply tw-bg-gray-200 tw-py-1 tw-px-2 tw-rounded-full tw-float-left tw-text-sm !important
   }
 
   .chip {
-    @apply tw-py-1 tw-px-2 tw-m-1 tw-rounded-full !important
+    @apply tw-py-1 tw-px-2 tw-m-0.5 tw-rounded-full tw-text-sm !important
   }
   
 }
-
 
 .custom-loader {
   animation: loader 1s infinite;

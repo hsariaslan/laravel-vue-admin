@@ -4,7 +4,7 @@
       :headers="headers"
       :items="datas"
       :search="tableSearch"
-      sort-by="id"
+      sort-by="no"
       dense
       class="elevation-1"
       :items-per-page="25"
@@ -20,9 +20,7 @@
             class="mb-2"
             to="/roles/new"
             v-can="'create_role'"
-          >
-            New Role
-          </v-btn>
+          >New Role</v-btn>
           <v-spacer></v-spacer>
           <v-text-field
             v-model="tableSearch"
@@ -50,6 +48,20 @@
 
         </v-toolbar>
       </template>
+      
+      <template v-slot:item.no="{ item }">
+        {{ datas.indexOf(item) + 1 }}
+      </template>
+
+      <template v-slot:header.scope="{ header }">
+        <span>{{ header.text }}</span>
+        <v-icon
+          small
+          title="Scope means how the relevant role has the permissions extensively. Lower number means higher scope. Lower scope roles can't execute the actions of higher scope roles."
+          class="tw--mt-0.5 tw-ml-0.5"
+        >mdi-help-circle-outline</v-icon>
+      </template>
+
       <template v-slot:item.permissions="{ item }">
         <div class="tw-flex-wrap tw-items-center">
           <div v-if="item.display_name === 'Admin'" class="tw-float-left">
@@ -93,21 +105,25 @@
           </div>
         </div>
       </template>
+
       <template v-slot:item.color="{ item }">
         <span
             :style="`background-color:${item.color}; color:${$helpers.colorLightOrDark(item.color.substr(1,6))}`"
             class="chip"
           >{{ item.color }}</span>
       </template>
+
       <template v-slot:item.actions="{ item }">
         <div class="tw-flex tw-items-end tw-justify-end">
-          <router-link :to="`/roles/${item.id}`" class="mr-2">
+          <router-link :to="`/roles/${item.id}`" class="mr-2" v-can="'show_role'">
             <v-icon small title="Show" class="hover:tw-text-blue-500">mdi-eye</v-icon>
           </router-link>
-          <router-link :to="`/roles/${item.id}/edit`" class="mr-2">
+          <router-link :to="`/roles/${item.id}/edit`" class="mr-2" v-can="'update_role'">
             <v-icon small title="Edit" class="hover:tw-text-green-500">mdi-pencil</v-icon>
           </router-link>
-          <v-icon small @click="toggleDialog(datas.indexOf(item))">mdi-delete</v-icon>
+          <div v-can="'delete_role'">
+            <v-icon small title="Delete" @click="toggleDialog(datas.indexOf(item))" class="hover:tw-text-red-500">mdi-delete</v-icon>
+          </div>
         </div>
       </template>
     </v-data-table>
@@ -123,9 +139,10 @@
     data: () => ({
       datas:[],
       headers : [
-        { text: 'ID', align: 'start', value: 'id' },
+        { text: 'No', align: 'start', value: 'no' },
         { text: 'Name'            , value: 'name' },
         { text: 'Displaying Name' , value: 'display_name' },
+        { text: 'Scope'        , value: 'scope' },
         { text: 'Permissions'     , value: 'permissions' },
         { text: 'Color'           , value: 'color', align: 'center', sortable: false },
         { text: 'Actions'         , value: 'actions', align: 'right', sortable: false },
@@ -145,9 +162,6 @@
         this.loading = false;
       })
       .catch((error) => {
-        if(error.response.status === 401) {
-          this.$router.push('Logout');
-        }
         console.log(error);
       });
     },

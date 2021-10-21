@@ -1,18 +1,31 @@
 import axios from 'axios';
-axios.defaults.withCredentials = true;
-axios.defaults.baseURL = process.env.VUE_APP_API_URL;
+import helpers from '@/plugins/helpers';
 
 const auth = {
   namespaced: true,
 
-  state: () => ({}),
+  state: () => ({
+    login: false
+  }),
 
-  getters: {},
+  getters: {
+    login: state => {
+      return state.login;
+    },
+  },
 
-  mutations: {},
+  mutations: {
+    login(state, user) {
+      state.login = user;
+    },
+
+    logout(state) {
+      state.login = false;
+    }
+  },
 
   actions: {
-    login({ }, credentials) {
+    login({ commit }, credentials) {
       return new Promise((resolve, reject) => {
         axios.get(process.env.VUE_APP_SERVER_URL + '/sanctum/csrf-cookie').then(() => {
           axios.post('/login', {
@@ -50,6 +63,10 @@ const auth = {
               localStorage.removeItem(userStorageName + 'roles');
               localStorage.removeItem(userStorageName + 'permissions');
             }
+
+            user = helpers.getUserDataFromStorage();
+            // console.log(user);
+            commit('login', user);
             resolve('/');
           })
           .catch((error) => {
@@ -59,7 +76,7 @@ const auth = {
       });
     },
 
-    logout({ }) {
+    logout({ commit }) {
       return new Promise((resolve, reject) => {
         axios.post('/logout')
         .then(() => {
@@ -76,6 +93,8 @@ const auth = {
           sessionStorage.removeItem(userStorageName + 'surname');
           sessionStorage.removeItem(userStorageName + 'roles');
           sessionStorage.removeItem(userStorageName + 'permissions');
+
+          commit('logout');
           resolve('/login');
         })
         .catch((error) => {

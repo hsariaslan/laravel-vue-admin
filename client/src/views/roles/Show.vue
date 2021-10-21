@@ -5,10 +5,12 @@
         <v-icon>mdi-chevron-left</v-icon>
         <span class="tw-text-base tw--ml-1">Back</span>
       </div>
-      <router-link :to="`/roles/${role.id}/edit`" class="edit tw-flex tw-items-center">
-        <v-icon small>mdi-pencil</v-icon>
-        <span class="tw-text-base">Edit</span>
-      </router-link>
+      <div v-can="'update_role'">
+        <router-link :to="`/roles/${role.id}/edit`" class="edit tw-flex tw-items-center">
+          <v-icon small>mdi-pencil</v-icon>
+          <span class="tw-text-base">Edit</span>
+        </router-link>
+      </div>
     </div>
     <v-card class="elevation-1 tw-mt-2">
       <v-card-title class="tw-flex tw-items-center tw-gap-3">
@@ -18,6 +20,7 @@
         <div class="tw-bg-red-100 tw-p-3 tw-col-span-3">
           <div class="tw-flex tw-flex-col tw-items-center tw-gap-1">
             <span class="tw-text-xl tw-font-bold">{{ role.display_name + ' (' + role.name + ')' }}</span>
+            <span class="tw-text-base">Scope: {{ role.scope }}</span>
             <span class="tw-text-sm tw-mt-2 tw-font-bold">Permissions</span>
             <div class="tw-flex-wrap">
               <span

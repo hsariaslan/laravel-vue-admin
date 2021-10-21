@@ -4,8 +4,12 @@ import router from './router';
 import store from './store';
 import vuetify from './plugins/vuetify';
 import helpers from './plugins/helpers';
+import axios from 'axios';
 
 import './assets/css/index.css';
+
+axios.defaults.withCredentials = true;
+axios.defaults.baseURL = process.env.VUE_APP_API_URL;
 
 Vue.config.productionTip = false;
 
@@ -18,39 +22,9 @@ const helper = {
 
 Vue.use(helper);
 
-const userStorageName = process.env.VUE_APP_STORAGE_NAME + '_user_';
-
-Vue.directive('can', (el, binding, vnode) => {
-  let userPermissions = localStorage.getItem(userStorageName + 'permissions')
-      ? localStorage.getItem(userStorageName + 'permissions')
-      : sessionStorage.getItem(userStorageName + 'permissions');
-
-  userPermissions = Vue.helpers.decrypt(userPermissions);
-
-  if(userPermissions.includes(binding.value)) {
-    return vnode.elm.hidden = false;
-  } else {
-    return vnode.elm.hidden = true;
-  }
-});
-
-Vue.directive('is', (el, binding, vnode) => {
-  let userRoles = localStorage.getItem(userStorageName + 'roles')
-      ? localStorage.getItem(userStorageName + 'roles')
-      : sessionStorage.getItem(userStorageName + 'roles');
-
-  userRoles = Vue.helpers.decrypt(userRoles);
-
-  if(userRoles.indexOf(binding.value) !== -1) {
-    return vnode.elm.hidden = false;
-  } else {
-    return vnode.elm.hidden = true;
-  }
-});
-
 new Vue({
   router,
   store,
   vuetify,
   render: h => h(App)
-}).$mount('#app')
+}).$mount('#app');

@@ -69,6 +69,9 @@ return [
          */
 
         'role_has_permissions' => 'role_has_permissions',
+
+        'permission_categories' => 'permission_categories',
+        'permission_actions' => 'permission_actions',
     ],
 
     'column_names' => [

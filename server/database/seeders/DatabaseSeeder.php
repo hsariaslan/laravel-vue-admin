@@ -22,6 +22,8 @@ class DatabaseSeeder extends Seeder
         DB::table('role_has_permissions')->truncate();
         DB::table('model_has_permissions')->truncate();
         DB::table('model_has_roles')->truncate();
+        DB::table('permission_categories')->truncate();
+        DB::table('permission_actions')->truncate();
         Schema::enableForeignKeyConstraints();
 
         $this->call(UserSeeder::class);

@@ -33,6 +33,9 @@ class StorePermissionRequest extends FormRequest
         return [
             'name'          => ['required', 'min:3', 'max:20', 'alpha_dash'],
             'display_name'  => ['required', 'min:3', 'max:20', 'regex:/^[\pL\s]+$/u'],
+            'action'        => ['required', 'exists:App\Models\PermissionAction,id'],
+            'category'      => ['required', 'exists:App\Models\PermissionCategory,id'],
+            'group'         => ['nullable', 'min:1', 'max:10', 'regex:/^[\pL\s]+$/u'],
         ];
     }
 }

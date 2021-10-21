@@ -1,15 +1,47 @@
 <template>
-  <div>
-    <div class="tw-flex tw-gap-x-2">
-      <div @click="$router.back()" class="back tw-cursor-pointer tw-flex tw-items-center">
-        <v-icon>mdi-chevron-left</v-icon>
-        <span class="tw-text-base tw--ml-1">Back</span>
+  <div class="tw-flex tw-justify-between tw-gap-4">
+    <div class="tw-w-3/12">
+      <div class="tw-bg-red-100 tw-pt-6 tw-pb-4">
+        <v-img src="@/assets/img/profile.jpg" class="tw-w-52 tw-max-h-52 tw-rounded-full tw-mx-auto tw-border-5 tw-border-red-500"></v-img>
+        <div class="tw-flex tw-flex-col tw-items-center tw-mt-6 tw-gap-1">
+          <span class="tw-text-xl tw-font-bold">{{ profile.name + ' ' + profile.surname }}</span>
+          <div class="tw-my-2">
+            <span
+              v-for="(role, idx) in profile.roles"
+              :key="idx"
+              :style="`background-color:${role.color}; color:${$helpers.colorLightOrDark(role.color.substr(1,6))}`"
+              class="chip tw-text-sm"
+            >{{ role.display_name }}</span>
+          </div>
+          <span class="tw-text-lg">@{{ profile.username }}</span>
+          <span class="tw-text-base">{{ profile.email }}</span>
+          <span class="tw-text-sm tw-mt-2 tw-font-bold">Permissions</span>
+          <div v-if="profile.roles[0].name === 'admin'">
+            <i>All permissions</i>
+          </div>
+          <div class="tw-flex-wrap" v-else>
+            <span
+              v-for="(permission, idx) in profile.all_permissions"
+              :key="idx"
+              class="chip tw-bg-white tw-text-black tw-block tw-float-left"
+            >{{ permission.display_name }}</span>
+          </div>
+        </div>
+      </div>
+      <div class="tw-bg-red-50 tw-p-6">
+        <div class="tw-flex tw-justify-between tw-text-center">
+          <UserRecords
+            v-for="record in records"
+            :key="record.id"
+            :record="record"
+          />
+        </div>
       </div>
     </div>
-    <v-card class="elevation-1 tw-mt-2">
+    <v-card class="tw-w-9/12">
       <v-form @submit.prevent="save">
         <v-card-title class="tw-flex tw-items-center tw-gap-3">
-          <span class="text-h5 tw-ml-2">Edit User: {{ usernameTitle }}</span>
+          <span class="text-h5 tw-ml-2">Edit Profile</span>
         </v-card-title>
         <v-card-text>
           <v-container>
@@ -17,7 +49,7 @@
               <v-col
                 cols="12"
                 sm="6"
-                md="3"
+                md="6"
               >
                 <v-text-field
                   label="Email*"
@@ -31,7 +63,7 @@
               <v-col
                 cols="12"
                 sm="6"
-                md="3"
+                md="6"
               >
                 <v-text-field
                   label="Username*"
@@ -41,10 +73,42 @@
                   @blur="input('username')"
                 ></v-text-field>
               </v-col>
+            </v-row>
+
+            <v-row>
               <v-col
                 cols="12"
                 sm="6"
-                md="3"
+                md="6"
+              >
+                <v-text-field
+                  label="Name*"
+                  v-model="user.name"
+                  :error-messages="nameErrors"
+                  @input="input('name')"
+                  @blur="input('name')"
+                ></v-text-field>
+              </v-col>
+              <v-col
+                cols="12"
+                sm="6"
+                md="6"
+              >
+                <v-text-field
+                  label="Surname*"
+                  v-model="user.surname"
+                  :error-messages="surnameErrors"
+                  @input="input('surname')"
+                  @blur="input('surname')"
+                ></v-text-field>
+              </v-col>
+            </v-row>
+
+            <v-row>
+              <v-col
+                cols="12"
+                sm="6"
+                md="6"
               >
                 <v-text-field
                   label="New Password"
@@ -60,7 +124,7 @@
               <v-col
                 cols="12"
                 sm="6"
-                md="3"
+                md="6"
               >
                 <v-text-field
                   label="Confirm Password"
@@ -70,93 +134,6 @@
                   @input="input('password_confirmation')"
                   @blur="input('password_confirmation')"
                 ></v-text-field>
-              </v-col>
-            </v-row>
-
-            <v-row>
-              <v-col
-                cols="12"
-                sm="6"
-                md="3"
-              >
-                <v-text-field
-                  label="Name*"
-                  v-model="user.name"
-                  :error-messages="nameErrors"
-                  @input="input('name')"
-                  @blur="input('name')"
-                ></v-text-field>
-              </v-col>
-              <v-col
-                cols="12"
-                sm="6"
-                md="3"
-              >
-                <v-text-field
-                  label="Surname*"
-                  v-model="user.surname"
-                  :error-messages="surnameErrors"
-                  @input="input('surname')"
-                  @blur="input('surname')"
-                ></v-text-field>
-              </v-col>
-              <v-col
-                cols="12"
-                sm="12"
-                md="6"
-                v-can="'list_roles'"
-              >
-                <v-select
-                  label="Role*"
-                  multiple
-                  v-model="user.roles"
-                  :items="roles"
-                  :error-messages="rolesErrors"
-                  @input="input('roles')"
-                  @blur="input('roles')"
-                  item-text="display_name"
-                  item-value="id"
-                >
-                </v-select>
-              </v-col>
-            </v-row>
-
-            <v-row v-can="'list_permissions'">
-              <v-col
-                cols="12"
-              >
-                <v-select
-                  label="Direct Permissions"
-                  multiple
-                  chips
-                  hint="Select if you want to define additional permissions for this user aside from the selected role(s)"
-                  persistent-hint
-                  v-model="user.permissions"
-                  :items="permissions"
-                  item-text="display_name"
-                  item-value="id"
-                >
-                  <template v-slot:prepend-item>
-                    <v-list-item
-                      ripple
-                      @click="toggle"
-                    >
-                      <v-list-item-action>
-                        <v-icon :color="user.permissions.length > 0 ? 'indigo darken-4' : ''">
-                          {{ selectAllIcon }}
-                        </v-icon>
-                      </v-list-item-action>
-
-                      <v-list-item-content>
-                        <v-list-item-title>
-                          Select All
-                        </v-list-item-title>
-                      </v-list-item-content>
-
-                    </v-list-item>
-                    <v-divider class="mt-2"></v-divider>
-                  </template>
-                </v-select>
               </v-col>
             </v-row>
 
@@ -197,7 +174,7 @@
           dismissible
           transition="scale-transition"
         >
-          User updated. <router-link :to="`/users/${user.id}`" class="success-links">Show the user</router-link> | <router-link to="/users" class="success-links">Return to users list</router-link>
+          Profile updated.
         </v-alert>
 
         <v-alert
@@ -222,35 +199,56 @@
 </template>
 
 <script>
-  import { mapGetters } from 'vuex';
-  import { validationMixin } from 'vuelidate';
-  import { required, minLength, maxLength, email, sameAs } from 'vuelidate/lib/validators';
-  import axios from 'axios';
-
+  import { validationMixin } from 'vuelidate'
+  import { required, minLength, maxLength, email, sameAs } from 'vuelidate/lib/validators'
+  import UserRecords from '@/components/UserRecords.vue';
+  const axios = require('axios');
+  
   export default {
+    name: 'Profile',
+    components: {
+      UserRecords,
+    },
+
     data: () => ({
+      profile: {
+        email                 : '',
+        username              : '',
+        name                  : '',
+        surname               : '',
+        roles                 : [{color:'#FFFFFF'}],
+        permissions           : [],
+        all_permissions       : [],
+      },
       user: {
-        id                    : null,
         email                 : '',
         username              : '',
         password              : '',
         password_confirmation : '',
         name                  : '',
         surname               : '',
-        roles                 : [],
-        permissions           : [],
         rememberMe            : false,
-        all_permissions       : [],
       },
-      usernameTitle: '',
-      roles: [],
-      permissions: [],
-      disabled: true,
+      disabled: false,
       loading: false,
       result: false,
       errors: null,
+      records: [
+        {
+          title: 'Posts',
+          value: 15,
+        },
+        {
+          title: 'Likes',
+          value: 27,
+        },
+        {
+          title: 'Comments',
+          value: 6,
+        },
+      ],
     }),
-    
+
     mixins: [validationMixin],
     validations: {
       user: {
@@ -260,48 +258,26 @@
         password_confirmation:  { sameAsPassword: sameAs('password') },
         name:                   { required, minLength: minLength(3) , maxLength: maxLength(20), },
         surname:                { required, minLength: minLength(3) , maxLength: maxLength(20), },
-        roles:                  { required, },
       }
     },
 
     created() {
-      const loggedUserScope = this.loggedUser.roles[0][4];
-
-      const idFromPath = parseInt(this.$route.fullPath.split('/')[2]);
-      this.user.id = idFromPath;
-      
-      axios.get('http://localhost:8000/api/v1/users/' + idFromPath)
+      axios.get('http://localhost:8000/api/v1/profile')
       .then((response) => {
-        if(loggedUserScope >= response.data.data.roles[0].scope) {
-          this.$router.back();
-        } else {
-          this.user = response.data.data;
-          this.usernameTitle = this.user.username;
-        }
+        this.user = response.data.data;
+        this.profile = {
+          email           : response.data.data.email,
+          username        : response.data.data.username,
+          name            : response.data.data.name,
+          surname         : response.data.data.surname,
+          roles           : response.data.data.roles,
+          permissions     : response.data.data.permissions,
+          all_permissions : response.data.data.all_permissions,
+        };
       })
       .catch((error) => {
         console.log(error);
       });
-
-      if(this.loggedUser.permissions.includes('list_roles')) {
-        axios.get('http://localhost:8000/api/v1/roles')
-        .then((response) => {
-          this.roles = response.data.data;
-        })
-        .catch((error) => {
-          console.log(error);
-        });
-      }
-
-      if(this.loggedUser.permissions.includes('list_permissions')) {
-        axios.get('http://localhost:8000/api/v1/permissions')
-        .then((response) => {
-          this.permissions = response.data.data;
-        })
-        .catch((error) => {
-          console.log(error);
-        });
-      }
     },
 
     methods: {
@@ -313,47 +289,27 @@
         this.$v.$touch();
 
         if (!this.$v.$invalid) {
-          const tempRoles = this.user.roles;
-          const tempPermissions = this.user.permissions;
-          
-          if(this.$helpers.isArrayOfObjects(this.user.roles)) {
-            let roles = [];
-
-            this.user.roles.forEach(role => {
-              roles.push(role.id);
-            });
-
-            this.user.roles = roles;
-          }
-          
-          if(this.$helpers.isArrayOfObjects(this.user.permissions)) {
-            let permissions = [];
-
-            this.user.permissions.forEach(permission => {
-              permissions.push(permission.id);
-            });
-
-            this.user.permissions = permissions;
-          }
-
           if(this.user.password === '') {
             this.user = {
-              id          : this.user.id,
               name        : this.user.name,
               surname     : this.user.surname,
               username    : this.user.username,
               email       : this.user.email,
-              roles       : this.user.roles,
-              permissions : this.user.permissions,
               rememberMe  : this.user.rememberMe,
             }
           }
 
-          axios.patch('http://localhost:8000/api/v1/users/' + this.user.id, this.user)
-          .then(() => {
-            this.user.roles = tempRoles;
-            this.user.permissions = tempPermissions;
-            this.usernameTitle = this.user.username;
+          axios.patch('http://localhost:8000/api/v1/profile', this.user)
+          .then((response) => {
+            this.profile = {
+              email           : response.data.data.email,
+              username        : response.data.data.username,
+              name            : response.data.data.name,
+              surname         : response.data.data.surname,
+              roles           : response.data.data.roles,
+              permissions     : response.data.data.permissions,
+              all_permissions : response.data.data.all_permissions,
+            };
             this.loading = false;
             this.result = 1;
             this.$v.$reset();
@@ -379,26 +335,12 @@
           case 'password_confirmation'  : this.$v.user.password_confirmation.$touch(); break;
           case 'name'                   : this.$v.user.name.$touch(); break;
           case 'surname'                : this.$v.user.surname.$touch(); break;
-          case 'roles'                  : this.$v.user.roles.$touch(); break;
         }
         this.disabled = this.$v.$invalid;
-      },
-
-      toggle () {
-        this.$nextTick(() => {
-          if (this.allPermissions) {
-            this.user.permissions = "";
-          } else {
-            this.user.permissions = this.permissions.slice();
-            this.user.permissions = this.permissions.map(({ id }) => id);
-          }
-        });
       },
     },
 
     computed: {
-      ...mapGetters({loggedUser: 'auth/login'}),
-
       emailErrors () {
         const errors = [];
         if (!this.$v.user.email.$dirty) return errors;
@@ -450,28 +392,6 @@
         !this.$v.user.surname.required && errors.push('Surname is required.');
         return errors;
       },
-
-      rolesErrors () {
-        const errors = [];
-        if (!this.$v.user.roles.$dirty) return errors;
-        !this.$v.user.roles.required && errors.push('Role is required.');
-        return errors;
-      },
-
-      allPermissions () {
-        return this.user.permissions.length === this.permissions.length
-      },
-
-      somePermissions () {
-        return this.user.permissions.length > 0 && !this.allPermissions
-      },
-
-      selectAllIcon () {
-        if (this.allPermissions) return 'mdi-close-box'
-        if (this.somePermissions) return 'mdi-minus-box'
-        return 'mdi-checkbox-blank-outline'
-      },
     },
   }
 </script>
-

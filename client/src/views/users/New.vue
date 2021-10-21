@@ -14,98 +14,74 @@
         <v-card-text>
           <v-container>
             <v-row>
-              <v-col
-                cols="12"
-                sm="6"
-                md="3"
-              >
+              <v-col cols="12" sm="6" md="3">
                 <v-text-field
                   label="Email*"
                   type="email"
                   v-model="user.email"
                   :error-messages="emailErrors"
                   @input="input('email')"
-                  @blur="input('email')"
-                ></v-text-field>
+                  @blur="input('email')">
+                </v-text-field>
               </v-col>
-              <v-col
-                cols="12"
-                sm="6"
-                md="3"
-              >
+
+              <v-col cols="12" sm="6" md="3">
                 <v-text-field
                   label="Username*"
                   v-model="user.username"
                   :error-messages="usernameErrors"
                   @input="input('username')"
-                  @blur="input('username')"
-                ></v-text-field>
+                  @blur="input('username')">
+                </v-text-field>
               </v-col>
-              <v-col
-                cols="12"
-                sm="6"
-                md="3"
-              >
+
+              <v-col cols="12" sm="6" md="3">
                 <v-text-field
                   label="Password*"
                   type="password"
                   v-model="user.password"
                   :error-messages="passwordErrors"
                   @input="input('password')"
-                  @blur="input('password')"
-                ></v-text-field>
+                  @blur="input('password')">
+                </v-text-field>
               </v-col>
-              <v-col
-                cols="12"
-                sm="6"
-                md="3"
-              >
+
+              <v-col cols="12" sm="6" md="3">
                 <v-text-field
                   label="Confirm Password*"
                   type="password"
                   v-model="user.password_confirmation"
                   :error-messages="password_confirmationErrors"
                   @input="input('password_confirmation')"
-                  @blur="input('password_confirmation')"
-                ></v-text-field>
+                  @blur="input('password_confirmation')">
+                </v-text-field>
               </v-col>
             </v-row>
 
             <v-row>
-              <v-col
-                cols="12"
-                sm="6"
-                md="3"
-              >
+              <v-col cols="12" sm="6" md="3">
                 <v-text-field
                   label="Name*"
                   v-model="user.name"
                   :error-messages="nameErrors"
                   @input="input('name')"
-                  @blur="input('name')"
-                ></v-text-field>
+                  @blur="input('name')">
+                </v-text-field>
               </v-col>
-              <v-col
-                cols="12"
-                sm="6"
-                md="3"
-              >
+
+              <v-col cols="12" sm="6" md="3">
                 <v-text-field
                   label="Surname*"
                   v-model="user.surname"
                   :error-messages="surnameErrors"
                   @input="input('surname')"
-                  @blur="input('surname')"
-                ></v-text-field>
+                  @blur="input('surname')">
+                </v-text-field>
               </v-col>
-              <v-col
-                cols="12"
-                sm="12"
-                md="6"
-              >
+
+              <v-col cols="12" sm="12" md="6" v-can="'list_roles'">
                 <v-select
                   label="Role*"
-                  persistent-hint
                   multiple
                   v-model="user.roles"
                   :items="roles"
@@ -113,16 +89,13 @@
                   @input="input('roles')"
                   @blur="input('roles')"
                   item-text="display_name"
-                  item-value="id"
-                >
+                  item-value="id">
                 </v-select>
               </v-col>
             </v-row>
 
-            <v-row>
-              <v-col
-                cols="12"
-              >
+            <v-row v-can="'list_permissions'">
+              <v-col cols="12">
                 <v-select
                   label="Direct Permissions"
                   multiple
@@ -132,13 +105,9 @@
                   v-model="user.permissions"
                   :items="permissions"
                   item-text="display_name"
-                  item-value="id"
-                >
+                  item-value="id">
                   <template v-slot:prepend-item>
-                    <v-list-item
-                      ripple
-                      @click="toggle"
-                    >
+                    <v-list-item ripple @click="toggle">
                       <v-list-item-action>
                         <v-icon :color="user.permissions.length > 0 ? 'indigo darken-4' : ''">
                           {{ selectAllIcon }}
@@ -164,20 +133,13 @@
         </v-card-text>
         <v-card-actions>
           <v-row>
-            <v-col
-              cols="12"
-              sm="9"
-              md="6"
-              lg="3"
-              class="tw-mx-auto"
-            >
+            <v-col cols="12" sm="9" md="6" lg="3" class="tw-mx-auto">
               <v-btn
                 type="submit"
                 :loading="loading"
                 :disabled="disabled"
                 color="primary"
-                class="tw-w-full"
-              >
+                class="tw-w-full">
                 Save
               </v-btn>
             </v-col>
@@ -190,9 +152,10 @@
           class="tw-mx-4 tw-mt-3"
           v-if="result === 1"
           dismissible
-          transition="scale-transition"
-        >
-          User created. <router-link :to="`/users/${user.id}`" class="success-links">Show the user</router-link> | <router-link to="/users" class="success-links">Return to users list</router-link>
+          transition="scale-transition">
+          User created.
+          <router-link :to="`/users/${user.id}`" class="success-links">Show the user</router-link> |
+          <router-link to="/users" class="success-links">Return to users list</router-link>
         </v-alert>
 
         <v-alert
@@ -201,12 +164,10 @@
           class="tw-mx-4 tw-mt-3"
           v-if="result === 0"
           dismissible
-          transition="scale-transition"
-        >
+          transition="scale-transition">
           <div
             v-for="(error, id) in errors.errors"
-            :key="id"
-          >
+            :key="id">
             {{ error[0] }}
           </div>
         </v-alert>
@@ -218,7 +179,7 @@
 <script>
   import { validationMixin } from 'vuelidate';
   import { required, minLength, maxLength, email, sameAs } from 'vuelidate/lib/validators';
-  const axios = require('axios');
+  import axios from 'axios';
 
   export default {
     data: () => ({
@@ -256,21 +217,27 @@
     },
 
     created() {
-      axios.get('http://localhost:8000/api/v1/roles')
-      .then((response) => {
-        this.roles = response.data.data;
-      })
-      .catch((error) => {
-        console.log(error);
-      });
+      const loggedUser = this.$store.getters['auth/login'];
 
-      axios.get('http://localhost:8000/api/v1/permissions')
-      .then((response) => {
-        this.permissions = response.data.data;
-      })
-      .catch((error) => {
-        console.log(error);
-      });
+      if(loggedUser.permissions.includes('list_roles')) {
+        axios.get('http://localhost:8000/api/v1/roles')
+        .then((response) => {
+          this.roles = response.data.data;
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+      }
+      
+      if(loggedUser.permissions.includes('list_permissions')) {
+        axios.get('http://localhost:8000/api/v1/permissions')
+        .then((response) => {
+          this.permissions = response.data.data;
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+      }
     },
 
     methods: {
@@ -282,7 +249,7 @@
         this.$v.$touch();
 
         if (!this.$v.$invalid) {
-          axios.post('http://localhost:8000/api/v1/users/create', this.user)
+          axios.post('http://localhost:8000/api/v1/users', this.user)
           .then((response) => {
             this.user = {
               id          : response.data.data.id,

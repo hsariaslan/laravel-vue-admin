@@ -69,18 +69,18 @@ export default {
       userEmail = sessionStorage.getItem(userStorageNamePrefix + 'email');
 
       if(this.isNotNull(userEmail)) {
-        user.email        = this.decrypt(userEmail)
-        user.username     = this.decryptStorageData(userStorageNamePrefix + 'username');
-        user.name         = this.decryptStorageData(userStorageNamePrefix + 'name');
-        user.surname      = this.decryptStorageData(userStorageNamePrefix + 'surname');
+        user.email        = this.decrypt(userEmail).toString()
+        user.username     = this.decryptStorageData(userStorageNamePrefix + 'username').toString();
+        user.name         = this.decryptStorageData(userStorageNamePrefix + 'name').toString();
+        user.surname      = this.decryptStorageData(userStorageNamePrefix + 'surname').toString();
         user.roles        = this.decryptStorageData(userStorageNamePrefix + 'roles');
         user.permissions  = this.decryptStorageData(userStorageNamePrefix + 'permissions');
       }
     } else {
-      user.email          = this.decrypt(userEmail)
-      user.username       = this.decryptStorageData(userStorageNamePrefix + 'username',     'local');
-      user.name           = this.decryptStorageData(userStorageNamePrefix + 'name',         'local');
-      user.surname        = this.decryptStorageData(userStorageNamePrefix + 'surname',      'local');
+      user.email          = this.decrypt(userEmail).toString()
+      user.username       = this.decryptStorageData(userStorageNamePrefix + 'username',     'local').toString();
+      user.name           = this.decryptStorageData(userStorageNamePrefix + 'name',         'local').toString();
+      user.surname        = this.decryptStorageData(userStorageNamePrefix + 'surname',      'local').toString();
       user.roles          = this.decryptStorageData(userStorageNamePrefix + 'roles',        'local');
       user.permissions    = this.decryptStorageData(userStorageNamePrefix + 'permissions',  'local');
     }
@@ -89,19 +89,21 @@ export default {
     let i = 0, j = 0;
     roles.push([]);
 
-    user.roles.forEach(value => {
-      if(i === 0 && j === 0) {
-        roles[0].push(value);
-      } else if(j % 4 !== 0) {
-        roles[i].push(value);
-      } else {
-        i ++;
-        j = 0;
-        roles.push([]);
-        roles[i].push(value);
-      }
-      j ++;
-    });
+    if(this.isNotNull(user.roles)) {
+      user.roles.forEach(value => {
+        if(i === 0 && j === 0) {
+          roles[0].push(value);
+        } else if(j % 5 !== 0) {
+          roles[i].push(value);
+        } else {
+          i ++;
+          j = 0;
+          roles.push([]);
+          roles[i].push(value);
+        }
+        j ++;
+      });
+    }
 
     user.roles = roles;
 

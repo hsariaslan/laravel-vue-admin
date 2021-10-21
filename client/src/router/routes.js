@@ -26,7 +26,7 @@ const users = {
     {
       path: '',
       name: 'Users',
-      component: () => import('@/views/users/Users.vue'),
+      component: () => import('@/views/users/Index.vue'),
       meta: {
         middleware: auth,
         permission: 'list_users',
@@ -72,7 +72,7 @@ const roles = {
     {
       path: '',
       name: 'Roles',
-      component: () => import('@/views/roles/Roles.vue'),
+      component: () => import('@/views/roles/Index.vue'),
       meta: {
         middleware: auth,
         permission: 'list_roles',
@@ -118,7 +118,7 @@ const permissions = {
     {
       path: '',
       name: 'Permissions',
-      component: () => import('@/views/permissions/Permissions.vue'),
+      component: () => import('@/views/permissions/Index.vue'),
       meta: {
         middleware: auth,
         permission: 'list_permissions',
@@ -157,6 +157,38 @@ const permissions = {
   ],
 };
 
+const permissionCategories = {
+  path: '/permission-categories',
+  component: DashboardLayout,
+  children: [
+    {
+      path: '',
+      name: 'PermissionCategories',
+      component: () => import('@/views/permission_categories/Index.vue'),
+      meta: {
+        middleware: auth,
+        permission: 'list_permission_categories',
+      },
+    },
+  ],
+};
+
+const permissionActions = {
+  path: '/permission-actions',
+  component: DashboardLayout,
+  children: [
+    {
+      path: '',
+      name: 'PermissionActions',
+      component: () => import('@/views/permission_actions/Index.vue'),
+      meta: {
+        middleware: auth,
+        permission: 'list_permission_actions',
+      },
+    },
+  ],
+};
+
 const routes = [
   {
     path: '/',
@@ -185,7 +217,7 @@ const routes = [
       {
         path: 'profile',
         name: 'Profile',
-        component: () => import('@/views/Profile.vue'),
+        component: () => import('@/views/profile/Index.vue'),
         meta: {
           middleware: auth,
         },
@@ -194,6 +226,8 @@ const routes = [
   },
   authRoutes,
   users,
+  permissionCategories,
+  permissionActions,
   roles,
   permissions,
 ];

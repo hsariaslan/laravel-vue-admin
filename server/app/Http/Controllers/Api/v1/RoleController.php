@@ -5,14 +5,18 @@ namespace App\Http\Controllers\Api\v1;
 use App\Http\Controllers\Controller;
 use Spatie\Permission\Models\Role;
 use App\Http\Resources\RoleResource;
-use App\Http\Resources\RoleCollection;
 use App\Http\Requests\StoreRoleRequest;
 
 class RoleController extends Controller
 {
-    public function index ():RoleCollection
+    public function index ()
     {
-        return new RoleCollection(Role::all());
+        $user = auth()->user();
+        $userRoles = $user->roles->sortBy('scope');
+        $scope = $userRoles[0]->scope;
+        $roles = Role::where('scope', '>=', $scope)->get();
+
+        return RoleResource::collection($roles);
     }
 
     public function store (StoreRoleRequest $request):RoleResource
@@ -20,6 +24,7 @@ class RoleController extends Controller
         $role = Role::create([
             'name'          => slugify($request->name),
             'display_name'  => $request->display_name,
+            'scope'         => $request->scope,
             'color'         => $request->color,
         ]);
         $role->givePermissionTo($request->permissions);
@@ -35,6 +40,7 @@ class RoleController extends Controller
     {
         $role->name         = slugify($request->name);
         $role->display_name = $request->display_name;
+        $role->scope        = $request->scope;
         $role->color        = $request->color;
         $role->save();
         $role->syncPermissions($request->permissions);

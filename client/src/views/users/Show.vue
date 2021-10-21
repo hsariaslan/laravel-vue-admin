@@ -5,10 +5,18 @@
         <v-icon>mdi-chevron-left</v-icon>
         <span class="tw-text-base tw--ml-1">Back</span>
       </div>
-      <router-link :to="`/users/${user.id}/edit`" class="edit tw-flex tw-items-center">
-        <v-icon small>mdi-pencil</v-icon>
-        <span class="tw-text-base">Edit</span>
-      </router-link>
+      <div v-can="'update_user'" v-if="loggedUser.roles[0][4] < user.roles[0].scope">
+        <router-link :to="`/users/${user.id}/edit`" class="edit tw-flex tw-items-center">
+          <v-icon small>mdi-pencil</v-icon>
+          <span class="tw-text-base">Edit</span>
+        </router-link>
+      </div>
+      <div v-can="'delete_user'" v-if="loggedUser.roles[0][4] < user.roles[0].scope">
+        <div class="delete tw-flex tw-items-center tw-cursor-pointer" @click="toggleDialog()">
+          <v-icon small title="Delete" class="hover:tw-text-red-500">mdi-delete</v-icon>
+          <span class="tw-text-base">Delete</span>
+        </div>
+      </div>
     </div>
     <v-card class="elevation-1 tw-mt-2">
       <v-card-title class="tw-flex tw-items-center tw-gap-3">
@@ -16,7 +24,7 @@
       </v-card-title>
       <v-card-text class="tw-grid tw-grid-cols-12">
         <div class="tw-bg-red-100 tw-pt-6 tw-pb-4 tw-px-3 tw-col-span-3">
-          <v-img src="@/assets/img/profile-big.jpeg" class="tw-w-52 tw-max-h-52 tw-rounded-full tw-mx-auto tw-border-5 tw-border-red-500"></v-img>
+          <v-img src="@/assets/img/profile.jpg" class="tw-w-52 tw-max-h-52 tw-rounded-full tw-mx-auto tw-border-5 tw-border-red-500"></v-img>
           <div class="tw-flex tw-flex-col tw-items-center tw-mt-6 tw-gap-1">
             <span class="tw-text-xl tw-font-bold">{{ user.name + ' ' + user.surname }}</span>
             <div class="tw-my-2">
@@ -50,19 +58,34 @@
         </div>
       </v-card-text>
     </v-card>
-    <DeleteDialog title="user" />
+
+    <v-dialog v-model="dialog" max-width="500px" persistent>
+      <v-card>
+        <v-card-title class="text-h5">Are you sure you want to delete this user?</v-card-title>
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <template>
+            <v-btn color="blue darken-1" text @click="toggleDialog()">Cancel</v-btn>
+            <v-btn color="blue darken-1" text @click="deleteData">
+              OK
+            </v-btn>
+          </template>
+          <v-spacer></v-spacer>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+
   </div>
 </template>
 
 <script>
+  import { mapGetters } from 'vuex';
   import UserRecords from '@/components/UserRecords.vue';
-  import DeleteDialog from "@/components/DeleteDialog.vue";
-  const axios = require('axios');
+  import axios from 'axios';
 
   export default {
     components: {
       UserRecords,
-      DeleteDialog,
     },
 
     data: () => ({
@@ -72,10 +95,14 @@
         surname             : '',
         username            : '',
         email               : '',
-        roles               : [],
+        roles               : [{
+          color: '#FFFFFF00',
+          scope: null,
+        }],
         permissions         : "",
         rememberMe          : false,
       },
+      dialog: false,
       records: [
         {
           title: 'Posts',
@@ -102,6 +129,28 @@
       .catch((error) => {
         console.log(error);
       });
+    },
+
+    methods: {
+      deleteData() {
+        let deletingDataId = this.user.id;
+
+        axios.delete('http://localhost:8000/api/v1/users/' + deletingDataId)
+        .then(() => {
+          this.$router.push('/users');
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+      },
+
+      toggleDialog() {
+        this.dialog = !this.dialog;
+      },
+    },
+
+    computed: {
+      ...mapGetters({loggedUser: 'auth/login'})
     },
   }
 </script>

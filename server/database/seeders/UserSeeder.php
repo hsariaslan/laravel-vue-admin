@@ -35,7 +35,7 @@ class UserSeeder extends Seeder
             'username'  => 'member',
             'email'     => 'member@sariaslan.com',
             'password'  =>  Hash::make('123456'),
-            'name'      => 'Mousa',
+            'name'      => 'Moussa',
             'surname'   => 'Membere',
         ]);
     }
