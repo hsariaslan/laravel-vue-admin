@@ -89,7 +89,7 @@
                   @input="input('roles')"
                   @blur="input('roles')"
                   item-text="display_name"
-                  item-value="id">
+                  item-value="uuid">
                 </v-select>
               </v-col>
             </v-row>
@@ -105,7 +105,7 @@
                   v-model="user.permissions"
                   :items="permissions"
                   item-text="display_name"
-                  item-value="id">
+                  item-value="uuid">
                   <template v-slot:prepend-item>
                     <v-list-item ripple @click="toggle">
                       <v-list-item-action>
@@ -154,7 +154,7 @@
           dismissible
           transition="scale-transition">
           User created.
-          <router-link :to="`/users/${user.id}`" class="success-links">Show the user</router-link> |
+          <router-link :to="`/users/${user.uuid}`" class="success-links">Show the user</router-link> |
           <router-link to="/users" class="success-links">Return to users list</router-link>
         </v-alert>
 
@@ -184,7 +184,7 @@
   export default {
     data: () => ({
       user: {
-        id                    : null,
+        uuid                  : null,
         email                 : '',
         username              : '',
         password              : '',
@@ -252,7 +252,7 @@
           axios.post('http://localhost:8000/api/v1/users', this.user)
           .then((response) => {
             this.user = {
-              id          : response.data.data.id,
+              uuid        : response.data.data.uuid,
               name        : '',
               surname     : '',
               username    : '',
@@ -297,7 +297,7 @@
             this.user.permissions = "";
           } else {
             this.user.permissions = this.permissions.slice();
-            this.user.permissions = this.permissions.map(({ id }) => id);
+            this.user.permissions = this.permissions.map(({ uuid }) => uuid);
           }
         })
       },

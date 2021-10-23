@@ -115,7 +115,7 @@
                   @input="input('roles')"
                   @blur="input('roles')"
                   item-text="display_name"
-                  item-value="id"
+                  item-value="uuid"
                 >
                 </v-select>
               </v-col>
@@ -134,7 +134,7 @@
                   v-model="user.permissions"
                   :items="permissions"
                   item-text="display_name"
-                  item-value="id"
+                  item-value="uuid"
                 >
                   <template v-slot:prepend-item>
                     <v-list-item
@@ -197,7 +197,7 @@
           dismissible
           transition="scale-transition"
         >
-          User updated. <router-link :to="`/users/${user.id}`" class="success-links">Show the user</router-link> | <router-link to="/users" class="success-links">Return to users list</router-link>
+          User updated. <router-link :to="`/users/${user.uuid}`" class="success-links">Show the user</router-link> | <router-link to="/users" class="success-links">Return to users list</router-link>
         </v-alert>
 
         <v-alert
@@ -230,7 +230,7 @@
   export default {
     data: () => ({
       user: {
-        id                    : null,
+        uuid                  : null,
         email                 : '',
         username              : '',
         password              : '',
@@ -266,8 +266,8 @@
 
     created() {
       const loggedUser = this.loggedUser.roles[0];
-      const idFromPath = parseInt(this.$route.fullPath.split('/')[2]);
-      this.user.id = idFromPath;
+      const idFromPath = this.$route.fullPath.split('/')[2];
+      this.user.uuid = idFromPath;
       
       axios.get('http://localhost:8000/api/v1/users/' + idFromPath)
       .then((response) => {
@@ -320,7 +320,7 @@
             let roles = [];
 
             this.user.roles.forEach(role => {
-              roles.push(role.id);
+              roles.push(role.uuid);
             });
 
             this.user.roles = roles;
@@ -330,7 +330,7 @@
             let permissions = [];
 
             this.user.permissions.forEach(permission => {
-              permissions.push(permission.id);
+              permissions.push(permission.uuid);
             });
 
             this.user.permissions = permissions;
@@ -338,7 +338,7 @@
 
           if(this.user.password === '') {
             this.user = {
-              id          : this.user.id,
+              uuid        : this.user.uuid,
               name        : this.user.name,
               surname     : this.user.surname,
               username    : this.user.username,
@@ -349,7 +349,7 @@
             }
           }
 
-          axios.patch('http://localhost:8000/api/v1/users/' + this.user.id, this.user)
+          axios.patch('http://localhost:8000/api/v1/users/' + this.user.uuid, this.user)
           .then(() => {
             this.user.roles = tempRoles;
             this.user.permissions = tempPermissions;
@@ -390,7 +390,7 @@
             this.user.permissions = "";
           } else {
             this.user.permissions = this.permissions.slice();
-            this.user.permissions = this.permissions.map(({ id }) => id);
+            this.user.permissions = this.permissions.map(({ uuid }) => uuid);
           }
         });
       },

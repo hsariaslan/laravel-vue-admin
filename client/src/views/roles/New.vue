@@ -81,7 +81,7 @@
                   @input="input('permissions')"
                   @blur="input('permissions')"
                   item-text="display_name"
-                  item-value="id"
+                  item-value="uuid"
                 >
                   <template v-slot:prepend-item>
                     <v-list-item ripple @click="toggle">
@@ -161,7 +161,7 @@
           dismissible
           transition="scale-transition"
         >
-          Role created. <router-link :to="`/roles/${role.id}`" class="success-links">Show the role</router-link> | <router-link to="/roles" class="success-links">Return to roles list</router-link>
+          Role created. <router-link :to="`/roles/${role.uuid}`" class="success-links">Show the role</router-link> | <router-link to="/roles" class="success-links">Return to roles list</router-link>
         </v-alert>
 
         <v-alert
@@ -192,7 +192,7 @@
   export default {
     data: () => ({
       role: {
-        id            : null,
+        uuid            : null,
         name          : '',
         display_name  : '',
         scope         : 100,
@@ -240,7 +240,7 @@
           axios.post('http://localhost:8000/api/v1/roles', this.role)
           .then((response) => {
             this.role = {
-              id          : response.data.data.id,
+              uuid          : response.data.data.uuid,
               name          : '',
               display_name  : '',
               color         : '',
@@ -297,7 +297,7 @@
             this.role.permissions = "";
           } else {
             this.role.permissions = this.permissions.slice();
-            this.role.permissions = this.permissions.map(({ id }) => id);
+            this.role.permissions = this.permissions.map(({ uuid }) => uuid);
           }
         })
       },

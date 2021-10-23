@@ -165,14 +165,14 @@
     methods: {
       editItem (item) {
         this.editedIndex = this.datas.indexOf(item);
-        this.editedId = this.datas[this.editedIndex].id;
+        this.editedId = this.datas[this.editedIndex].uuid;
         this.editedItem = Object.assign({}, item);
         this.dialog = true;
       },
 
       deleteItem (item) {
         this.editedIndex = this.datas.indexOf(item);
-        this.editedId = this.datas[this.editedIndex].id;
+        this.editedId = this.datas[this.editedIndex].uuid;
         this.editedItem = Object.assign({}, item);
         this.dialogDelete = true;
       },

@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Api\v1;
 
 use App\Http\Controllers\Controller;
-use Spatie\Permission\Models\Role;
+use App\Models\Role;
 use App\Http\Resources\RoleResource;
 use App\Http\Requests\StoreRoleRequest;
 

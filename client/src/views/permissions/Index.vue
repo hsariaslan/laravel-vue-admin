@@ -73,12 +73,12 @@
       <template v-slot:item.actions="{ item }">
         <div class="tw-flex tw-items-end tw-justify-end">
           <div class="tw-float-left" v-can="'show_permission'">
-            <router-link :to="`/permissions/${item.id}`">
+            <router-link :to="`/permissions/${item.uuid}`">
               <v-icon small title="Show" class="hover:tw-text-blue-500">mdi-eye</v-icon>
             </router-link>
           </div>
           <div class="tw-float-left tw-ml-2" v-can="'update_permission'" v-if="loggedUser.permissions.includes(item.name)">
-            <router-link :to="`/permissions/${item.id}/edit`">
+            <router-link :to="`/permissions/${item.uuid}/edit`">
               <v-icon small title="Edit" class="hover:tw-text-green-500">mdi-pencil</v-icon>
             </router-link>
           </div>
@@ -128,7 +128,7 @@
 
     methods: {
       deleteData() {
-        let deletingDataId = this.datas[this.deletingIndex].id;
+        let deletingDataId = this.datas[this.deletingIndex].uuid;
 
         axios.delete('http://localhost:8000/api/v1/permissions/' + deletingDataId)
         .then(() => {

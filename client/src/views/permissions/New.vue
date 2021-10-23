@@ -50,7 +50,7 @@
                   @input="input('action')"
                   @blur="input('action')"
                   item-text="name"
-                  item-value="id">
+                  item-value="uuid">
                 </v-select>
               </v-col>
               
@@ -63,7 +63,7 @@
                   @input="input('category')"
                   @blur="input('category')"
                   item-text="name"
-                  item-value="id">
+                  item-value="uuid">
                 </v-select>
               </v-col>
 
@@ -109,7 +109,7 @@
           dismissible
           transition="scale-transition">
           Permission created.
-          <router-link :to="`/permissions/${permission.id}`" class="success-links">Show the permission</router-link> |
+          <router-link :to="`/permissions/${permission.uuid}`" class="success-links">Show the permission</router-link> |
           <router-link to="/permissions" class="success-links">Return to permissions list</router-link>
         </v-alert>
 
@@ -139,7 +139,7 @@
   export default {
     data: () => ({
       permission: {
-        id            : null,
+        uuid          : null,
         name          : '',
         display_name  : '',
         action        : '',
@@ -204,7 +204,7 @@
           axios.post('http://localhost:8000/api/v1/permissions', this.permission)
           .then((response) => {
             this.permission = {
-              id          : response.data.data.id,
+              uuid          : response.data.data.uuid,
               name          : '',
               display_name  : '',
             };

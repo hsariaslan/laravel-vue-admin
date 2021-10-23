@@ -63,7 +63,7 @@
           <span
             v-for="(role, idx) in item.roles"
             :key="idx"
-            :style="`background-color:#${role.color}; color:${$helpers.colorLightOrDark(role.color.substr(1,6))}`"
+            :style="`background-color:${role.color}; color:${$helpers.colorLightOrDark(role.color.substr(1,6))}`"
             class="chip"
           >{{ role.display_name }}</span>
         </div>
@@ -124,12 +124,12 @@
         </div>
         <div v-else class="tw-flex tw-items-end tw-justify-end">
           <div class="tw-float-left">
-            <router-link :to="`/users/${item.id}`" v-can="'show_user'">
+            <router-link :to="`/users/${item.uuid}`" v-can="'show_user'">
               <v-icon small title="Show" class="hover:tw-text-blue-500">mdi-eye</v-icon>
             </router-link>
           </div>
           <div class="tw-float-left tw-ml-2" v-can="'update_user'" v-if="loggedUser.roles[0][1] === 'admin' || loggedUser.roles[0][4] < item.roles[0].scope">
-            <router-link :to="`/users/${item.id}/edit`">
+            <router-link :to="`/users/${item.uuid}/edit`">
             <v-icon small title="Edit" class="hover:tw-text-green-500">mdi-pencil</v-icon>
           </router-link>
           </div>
@@ -181,7 +181,7 @@
 
     methods: {
       deleteData() {
-        let deletingDataId = this.datas[this.deletingIndex].id;
+        let deletingDataId = this.datas[this.deletingIndex].uuid;
 
         axios.delete('http://localhost:8000/api/v1/users/' + deletingDataId)
         .then(() => {

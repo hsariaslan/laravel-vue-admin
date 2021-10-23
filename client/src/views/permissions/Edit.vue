@@ -50,7 +50,7 @@
                   @input="input('action')"
                   @blur="input('action')"
                   item-text="name"
-                  item-value="id">
+                  item-value="uuid">
                 </v-select>
               </v-col>
               
@@ -63,7 +63,7 @@
                   @input="input('category')"
                   @blur="input('category')"
                   item-text="name"
-                  item-value="id">
+                  item-value="uuid">
                 </v-select>
               </v-col>
 
@@ -109,7 +109,7 @@
           dismissible
           transition="scale-transition">
           Permission updated.
-          <router-link :to="`/permissions/${permission.id}`" class="success-links">Show the permission</router-link> |
+          <router-link :to="`/permissions/${permission.uuid}`" class="success-links">Show the permission</router-link> |
           <router-link to="/permissions" class="success-links">Return to permissions list</router-link>
         </v-alert>
 
@@ -139,7 +139,7 @@
   export default {
     data: () => ({
       permission: {
-        id            : null,
+        uuid          : null,
         name          : '',
         display_name  : '',
         action        : '',
@@ -168,8 +168,8 @@
     },
 
     created() {
-      const idFromPath = parseInt(this.$route.fullPath.split('/')[2]);
-      this.permission.id = idFromPath;
+      const idFromPath = this.$route.fullPath.split('/')[2];
+      this.permission.uuid = idFromPath;
 
       axios.get('http://localhost:8000/api/v1/permissions/' + idFromPath)
       .then((response) => {
@@ -211,14 +211,14 @@
           const tempCategory = this.permission.category;
           
           if(this.$helpers.isObject(this.permission.action)) {
-            this.permission.action = this.permission.action.id;
+            this.permission.action = this.permission.action.uuid;
           }
 
           if(this.$helpers.isObject(this.permission.category)) {
-            this.permission.category = this.permission.category.id;
+            this.permission.category = this.permission.category.uuid;
           }
           
-          axios.patch('http://localhost:8000/api/v1/permissions/' + this.permission.id, this.permission)
+          axios.patch('http://localhost:8000/api/v1/permissions/' + this.permission.uuid, this.permission)
           .then(() => {
             this.permission.action = tempAction;
             this.permission.category = tempCategory;

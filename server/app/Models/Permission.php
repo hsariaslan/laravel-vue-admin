@@ -7,10 +7,26 @@ use Spatie\Permission\Models\Permission as PermissionModel;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use App\Models\PermissionCategory;
 use App\Models\PermissionAction;
+use App\Models\Traits\HasUuid;
 
 class Permission extends PermissionModel
 {
-    use HasFactory;
+    use HasFactory, HasUuid;
+
+    protected $fillable = [
+        'uuid',
+        'category_id',
+        'action_id',
+        'name',
+        'display_name',
+        'group',
+        'guard_name',
+    ];
+	
+	public function getRouteKeyName()
+	{
+		return 'uuid';
+	}
 
     /**
      * A permission belongs to a permission category.

@@ -81,7 +81,7 @@
                   @input="input('permissions')"
                   @blur="input('permissions')"
                   item-text="display_name"
-                  item-value="id"
+                  item-value="uuid"
                 >
                   <template v-slot:prepend-item>
                     <v-list-item ripple @click="toggle">
@@ -161,7 +161,7 @@
           dismissible
           transition="scale-transition"
         >
-          Role created. <router-link :to="`/roles/${role.id}`" class="success-links">Show the role</router-link> | <router-link to="/roles" class="success-links">Return to roles list</router-link>
+          Role created. <router-link :to="`/roles/${role.uuid}`" class="success-links">Show the role</router-link> | <router-link to="/roles" class="success-links">Return to roles list</router-link>
         </v-alert>
 
         <v-alert
@@ -192,7 +192,7 @@
   export default {
     data: () => ({
       role: {
-        id            : null,
+        uuid            : null,
         name          : '',
         display_name  : '',
         scope         : '',
@@ -219,8 +219,8 @@
     },
 
     created() {
-      const idFromPath = parseInt(this.$route.fullPath.split('/')[2]);
-      this.role.id = idFromPath;
+      const idFromPath = this.$route.fullPath.split('/')[2];
+      this.role.uuid = idFromPath;
 
       axios.get('http://localhost:8000/api/v1/roles/' + idFromPath)
       .then((response) => {
@@ -256,7 +256,7 @@
             let permissions = [];
 
             this.role.permissions.forEach(permission => {
-              permissions.push(permission.id);
+              permissions.push(permission.uuid);
             });
 
             this.role.permissions = permissions;
@@ -264,7 +264,7 @@
 
           this.role.color = this.role.color.substr(1,8);
 
-          axios.patch('http://localhost:8000/api/v1/roles/' + this.role.id, this.role)
+          axios.patch('http://localhost:8000/api/v1/roles/' + this.role.uuid, this.role)
           .then(() => {
             this.role.permissions = tempPermissions;
             this.roleTitle = this.role.display_name;
@@ -319,7 +319,7 @@
             this.role.permissions = "";
           } else {
             this.role.permissions = this.permissions.slice();
-            this.role.permissions = this.permissions.map(({ id }) => id);
+            this.role.permissions = this.permissions.map(({ uuid }) => uuid);
           }
         })
       },

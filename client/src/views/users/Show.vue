@@ -6,7 +6,7 @@
         <span class="tw-text-base tw--ml-1">Back</span>
       </div>
       <div v-can="'update_user'" v-if="loggedUser.roles[0][4] < user.roles[0].scope">
-        <router-link :to="`/users/${user.id}/edit`" class="edit tw-flex tw-items-center">
+        <router-link :to="`/users/${user.uuid}/edit`" class="edit tw-flex tw-items-center">
           <v-icon small>mdi-pencil</v-icon>
           <span class="tw-text-base">Edit</span>
         </router-link>
@@ -31,7 +31,7 @@
               <span
                 v-for="(role, idx) in user.roles"
                 :key="idx"
-                :style="`background-color:#${role.color}; color:${$helpers.colorLightOrDark(role.color.substr(1,6))}`"
+                :style="`background-color:${role.color}; color:${$helpers.colorLightOrDark(role.color.substr(1,6))}`"
                 class="chip"
               >{{ role.display_name }}</span>
             </div>
@@ -90,7 +90,7 @@
 
     data: () => ({
       user: {
-        id                  : null,
+        uuid                : null,
         name                : '',
         surname             : '',
         username            : '',
@@ -120,8 +120,7 @@
     }),
 
     created() {
-      const idFromPath = parseInt(this.$route.fullPath.split('/')[2]);
-      
+      const idFromPath = this.$route.fullPath.split('/')[2];
       axios.get('http://localhost:8000/api/v1/users/' + idFromPath)
       .then((response) => {
         this.user = response.data.data;
@@ -134,7 +133,7 @@
 
     methods: {
       deleteData() {
-        let deletingDataId = this.user.id;
+        let deletingDataId = this.user.uuid;
 
         axios.delete('http://localhost:8000/api/v1/users/' + deletingDataId)
         .then(() => {

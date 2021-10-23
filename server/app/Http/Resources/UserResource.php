@@ -17,12 +17,12 @@ class UserResource extends JsonResource
     public function toArray($request)
     {
         return [
-            'id'                => $this->id,
+            'uuid'              => $this->uuid,
             'username'          => $this->username,
             'email'             => $this->email,
             'name'              => $this->name,
             'surname'           => $this->surname,
-            'roles'             => $this->roles()->select('id', 'display_name', 'color', 'scope')->orderBy('scope')->get(),
+            'roles'             => RoleResource::collection($this->roles()->orderBy('scope')->get()),
             'permissions'       => PermissionResource::collection($this->permissions),
             'all_permissions'   => PermissionResource::collection($this->getAllPermissions()),
         ];

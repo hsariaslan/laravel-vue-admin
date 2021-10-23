@@ -5,10 +5,11 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use App\Models\Traits\HasUuid;
 
 class PermissionCategory extends Model
 {
-    use HasFactory;
+    use HasFactory, HasUuid;
 
     /**
      * The attributes that are mass assignable.
@@ -16,8 +17,14 @@ class PermissionCategory extends Model
      * @var string[]
      */
     protected $fillable = [
+        'uuid',
         'name',
     ];
+	
+	public function getRouteKeyName()
+	{
+		return 'uuid';
+	}
 
     /**
      * A category may be given various permissions.

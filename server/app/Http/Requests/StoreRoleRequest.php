@@ -4,6 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
+use App\Models\Permission;
 
 class StoreRoleRequest extends FormRequest
 {
@@ -38,5 +39,22 @@ class StoreRoleRequest extends FormRequest
             'color'         => ['required', 'size:8', 'alpha_num'],
             'permissions'   => ['required', 'array', 'exists:App\Models\Permission,id']
         ];
+    }
+
+    /**
+     * Prepare the data for validation.
+     *
+     * @return void
+     */
+    protected function prepareForValidation()
+    {
+        $permissions = [];
+        foreach($this->permissions as $permission) {
+            $permissions[] = Permission::select('id')->where('uuid', $permission)->first()->id;
+        }
+
+        $this->merge([
+            'permissions' => $permissions
+        ]);
     }
 }

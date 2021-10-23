@@ -3,6 +3,8 @@
 namespace App\Http\Resources;
 
 use Illuminate\Http\Resources\Json\JsonResource;
+use App\Http\Resources\PermissionActionResource;
+use App\Http\Resources\PermissionCategoryResource;
 
 class PermissionResource extends JsonResource
 {
@@ -15,11 +17,11 @@ class PermissionResource extends JsonResource
     public function toArray($request)
     {
         return [
-            'id'            => $this->id,
+            'uuid'          => $this->uuid,
             'name'          => $this->name,
             'display_name'  => $this->display_name,
-            'action'        => $this->action,
-            'category'      => $this->category,
+            'action'        => new PermissionActionResource($this->action),
+            'category'      => new PermissionCategoryResource($this->category),
             'group'         => $this->group,
         ];
     }

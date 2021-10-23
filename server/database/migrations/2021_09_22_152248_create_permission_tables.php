@@ -27,18 +27,21 @@ class CreatePermissionTables extends Migration
 
         Schema::create($tableNames['permission_categories'], function (Blueprint $table) {
             $table->tinyIncrements('id');
+            $table->uuid('uuid')->unique();
             $table->string('name', 30)->unique();
             $table->timestamps();
         });
 
         Schema::create($tableNames['permission_actions'], function (Blueprint $table) {
             $table->tinyIncrements('id');
+            $table->uuid('uuid')->unique();
             $table->string('name', 30)->unique();
             $table->timestamps();
         });
 
         Schema::create($tableNames['permissions'], function (Blueprint $table) use ($tableNames) {
             $table->increments('id');
+            $table->uuid('uuid')->unique();
             $table->unsignedTinyInteger('category_id');
             $table->unsignedTinyInteger('action_id');
             $table->string('name', 50)->unique();
@@ -66,6 +69,7 @@ class CreatePermissionTables extends Migration
                 $table->unsignedInteger($columnNames['team_foreign_key'])->nullable();
                 $table->index($columnNames['team_foreign_key'], 'roles_team_foreign_key_index');
             }
+            $table->uuid('uuid')->unique();
             $table->string('name', 20)->unique();
             $table->string('display_name', 20)->unique();
             $table->string('color', 8);

@@ -6,7 +6,7 @@
         <span class="tw-text-base tw--ml-1">Back</span>
       </div>
       <div v-can="'update_permission'" v-if="loggedUser.permissions.includes(permission.name)">
-        <router-link :to="`/permissions/${permission.id}/edit`" class="edit tw-flex tw-items-center">
+        <router-link :to="`/permissions/${permission.uuid}/edit`" class="edit tw-flex tw-items-center">
           <v-icon small>mdi-pencil</v-icon>
           <span class="tw-text-base">Edit</span>
         </router-link>
@@ -78,7 +78,7 @@
   export default {
     data: () => ({
       permission: {
-        id            : null,
+        uuid          : null,
         name          : '',
         display_name  : '',
         action        : '',
@@ -89,7 +89,7 @@
     }),
 
     created() {
-      const idFromPath = parseInt(this.$route.fullPath.split('/')[2]);
+      const idFromPath = this.$route.fullPath.split('/')[2];
       
       axios.get('http://localhost:8000/api/v1/permissions/' + idFromPath)
       .then((response) => {
@@ -103,7 +103,7 @@
 
     methods: {
       deleteData() {
-        let deletingDataId = this.permission.id;
+        let deletingDataId = this.permission.uuid;
 
         axios.delete('http://localhost:8000/api/v1/permissions/' + deletingDataId)
         .then(() => {

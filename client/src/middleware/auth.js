@@ -11,8 +11,8 @@ export default function auth({ next, router }) {
   }
   
   if(store.getters["auth/login"] === false ) {
-    let user = helpers.getUserDataFromStorage();
-    store.commit('auth/login', user);
+    const userDatas = helpers.getUserDataFromStorage();
+    store.commit('auth/login', userDatas);
     
   }
 
@@ -24,10 +24,9 @@ export default function auth({ next, router }) {
     }
     return Promise.reject(error);
   });
-  
+
   const user = store.getters["auth/login"];
   permissionDirectives(user);
-
 
   return next();
 }

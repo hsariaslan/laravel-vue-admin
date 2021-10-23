@@ -6,7 +6,7 @@
         <span class="tw-text-base tw--ml-1">Back</span>
       </div>
       <div v-can="'update_role'">
-        <router-link :to="`/roles/${role.id}/edit`" class="edit tw-flex tw-items-center">
+        <router-link :to="`/roles/${role.uuid}/edit`" class="edit tw-flex tw-items-center">
           <v-icon small>mdi-pencil</v-icon>
           <span class="tw-text-base">Edit</span>
         </router-link>
@@ -53,7 +53,7 @@
   export default {
     data: () => ({
       role: {
-        id            : null,
+        uuid          : null,
         name          : '',
         display_name  : '',
         color         : '',
@@ -62,7 +62,7 @@
     }),
 
     created() {
-      const idFromPath = parseInt(this.$route.fullPath.split('/')[2]);
+      const idFromPath = this.$route.fullPath.split('/')[2];
       
       axios.get('http://localhost:8000/api/v1/roles/' + idFromPath)
       .then((response) => {

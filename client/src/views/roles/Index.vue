@@ -115,10 +115,10 @@
 
       <template v-slot:item.actions="{ item }">
         <div class="tw-flex tw-items-end tw-justify-end">
-          <router-link :to="`/roles/${item.id}`" class="mr-2" v-can="'show_role'">
+          <router-link :to="`/roles/${item.uuid}`" class="mr-2" v-can="'show_role'">
             <v-icon small title="Show" class="hover:tw-text-blue-500">mdi-eye</v-icon>
           </router-link>
-          <router-link :to="`/roles/${item.id}/edit`" class="mr-2" v-can="'update_role'">
+          <router-link :to="`/roles/${item.uuid}/edit`" class="mr-2" v-can="'update_role'">
             <v-icon small title="Edit" class="hover:tw-text-green-500">mdi-pencil</v-icon>
           </router-link>
           <div v-can="'delete_role'">
@@ -168,7 +168,7 @@
 
     methods: {
       deleteData() {
-        let deletingDataId = this.datas[this.deletingIndex].id;
+        let deletingDataId = this.datas[this.deletingIndex].uuid;
 
         axios.delete('http://localhost:8000/api/v1/roles/' + deletingDataId)
         .then(() => {
