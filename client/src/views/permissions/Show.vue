@@ -5,16 +5,28 @@
         <v-icon>mdi-chevron-left</v-icon>
         <span class="tw-text-base tw--ml-1">Back</span>
       </div>
-      <div v-can="'update_permission'" v-if="loggedUser.permissions.includes(permission.name)">
+      <div v-if="loggedUser.roles[0].includes('admin')" class="tw-flex tw-gap-x-2">
         <router-link :to="`/permissions/${permission.uuid}/edit`" class="edit tw-flex tw-items-center">
           <v-icon small>mdi-pencil</v-icon>
           <span class="tw-text-base">Edit</span>
         </router-link>
-      </div>
-      <div v-can="'delete_permission'" v-if="loggedUser.permissions.includes(permission.name)">
         <div class="delete tw-flex tw-items-center tw-cursor-pointer" @click="toggleDialog()">
           <v-icon small title="Delete" class="hover:tw-text-red-500">mdi-delete</v-icon>
           <span class="tw-text-base">Delete</span>
+        </div>
+      </div>
+      <div v-else>
+        <div v-can="'update_permission'" v-if="loggedUser.permissions.includes(permission.name)">
+          <router-link :to="`/permissions/${permission.uuid}/edit`" class="edit tw-flex tw-items-center">
+            <v-icon small>mdi-pencil</v-icon>
+            <span class="tw-text-base">Edit</span>
+          </router-link>
+        </div>
+        <div v-can="'delete_permission'" v-if="loggedUser.permissions.includes(permission.name)">
+          <div class="delete tw-flex tw-items-center tw-cursor-pointer" @click="toggleDialog()">
+            <v-icon small title="Delete" class="hover:tw-text-red-500">mdi-delete</v-icon>
+            <span class="tw-text-base">Delete</span>
+          </div>
         </div>
       </div>
     </div>

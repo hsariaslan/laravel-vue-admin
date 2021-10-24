@@ -71,7 +71,22 @@
       </template>
 
       <template v-slot:item.actions="{ item }">
-        <div class="tw-flex tw-items-end tw-justify-end">
+        <div v-if="loggedUser.roles[0].includes('admin')" class="tw-flex tw-items-end tw-justify-end">
+          <div class="tw-float-left">
+            <router-link :to="`/permissions/${item.uuid}`">
+              <v-icon small title="Show" class="hover:tw-text-blue-500">mdi-eye</v-icon>
+            </router-link>
+          </div>
+          <div class="tw-float-left tw-ml-2">
+            <router-link :to="`/permissions/${item.uuid}/edit`">
+              <v-icon small title="Edit" class="hover:tw-text-green-500">mdi-pencil</v-icon>
+            </router-link>
+          </div>
+          <div class="tw-float-left tw-ml-2">
+            <v-icon small title="Delete" @click="toggleDialog(datas.indexOf(item))" class="hover:tw-text-red-500">mdi-delete</v-icon>
+          </div>
+        </div>
+        <div v-else class="tw-flex tw-items-end tw-justify-end">
           <div class="tw-float-left" v-can="'show_permission'">
             <router-link :to="`/permissions/${item.uuid}`">
               <v-icon small title="Show" class="hover:tw-text-blue-500">mdi-eye</v-icon>
