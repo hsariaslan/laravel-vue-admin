@@ -17,26 +17,26 @@ class UserSeeder extends Seeder
     {
         User::create([
             'username'  => 'admin',
-            'email'     => 'admin@sariaslan.com',
+            'email'     => 'admin@laravel.com',
             'password'  =>  Hash::make('123456'),
-            'name'      => 'Admino',
-            'surname'   => 'Sariyaslani',
+            'name'      => 'Admin',
+            'surname'   => 'Sariaslan',
         ]);
 
         User::create([
             'username'  => 'editor',
-            'email'     => 'editor@sariaslan.com',
+            'email'     => 'editor@laravel.com',
             'password'  =>  Hash::make('123456'),
-            'name'      => 'Editorio',
-            'surname'   => 'Dormitory',
+            'name'      => 'Editor',
+            'surname'   => 'Sariaslan',
         ]);
 
         User::create([
             'username'  => 'member',
-            'email'     => 'member@sariaslan.com',
+            'email'     => 'member@laravel.com',
             'password'  =>  Hash::make('123456'),
-            'name'      => 'Moussa',
-            'surname'   => 'Membere',
+            'name'      => 'Member',
+            'surname'   => 'Sariaslan',
         ]);
     }
 }
