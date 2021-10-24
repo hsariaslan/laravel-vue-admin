@@ -107,13 +107,10 @@
                 v-can="'list_roles'"
               >
                 <v-select
-                  label="Role*"
+                  label="Role"
                   multiple
                   v-model="user.roles"
                   :items="roles"
-                  :error-messages="rolesErrors"
-                  @input="input('roles')"
-                  @blur="input('roles')"
                   item-text="display_name"
                   item-value="uuid"
                 >
@@ -260,7 +257,6 @@
         password_confirmation:  { sameAsPassword: sameAs('password') },
         name:                   { required, minLength: minLength(3) , maxLength: maxLength(20), },
         surname:                { required, minLength: minLength(3) , maxLength: maxLength(20), },
-        roles:                  { required, },
       }
     },
 
@@ -448,13 +444,6 @@
         !this.$v.user.surname.minLength && errors.push('Surname must be minimum 3 characters long');
         !this.$v.user.surname.maxLength && errors.push('Surname must be at most 20 characters long');
         !this.$v.user.surname.required && errors.push('Surname is required.');
-        return errors;
-      },
-
-      rolesErrors () {
-        const errors = [];
-        if (!this.$v.user.roles.$dirty) return errors;
-        !this.$v.user.roles.required && errors.push('Role is required.');
         return errors;
       },
 

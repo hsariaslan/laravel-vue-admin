@@ -41,7 +41,7 @@ class StoreUserRequest extends FormRequest
             'password_confirmation' => ['sometimes', 'required', 'same:password'],
             'name'                  => ['required', 'min:3', 'max:20', 'alpha'],
             'surname'               => ['required', 'min:3', 'max:20', 'alpha'],
-            'roles'                 => ['required', 'array', 'exists:Spatie\Permission\Models\Role,id'],
+            'roles'                 => ['array', 'exists:Spatie\Permission\Models\Role,id'],
             'permissions'           => ['nullable', 'array', 'exists:App\Models\Permission,id']
         ];
     }
@@ -62,6 +62,10 @@ class StoreUserRequest extends FormRequest
 
         foreach($this->permissions as $permission) {
             $permissions[] = Permission::select('id')->where('uuid', $permission)->first()->id;
+        }
+
+        if(count($roles) == 0) {
+            $roles[] = Role::select('id')->orderBy('scope', 'desc')->first()->id;
         }
 
         $this->merge([
