@@ -59,7 +59,12 @@
         transition="scale-transition"
         style="margin-top: 20px; position: absolute; width:100%;"
       >
-        {{ this.error.message }}
+      {{ errors.message }}
+        <div
+          v-for="(error, id) in errors.errors"
+          :key="id">
+          {{ error[0] }}
+        </div>
       </v-alert>
     </v-card>
   </v-form>
@@ -86,7 +91,6 @@
         rememberMe: false,
       },
       errors: [],
-      error: {},
       disabled: true,
       loading: false,
       alert: false,
@@ -106,9 +110,10 @@
           })
           .catch(err => {
             // console.log(err);
-            this.error = {
+            this.errors = {
               status: err.response.status,
-              message: err.response.data.message
+              message: err.response.data.message,
+              errors: err.response.data.errors,
             };
             this.disabled = false;
             this.alert = true;
