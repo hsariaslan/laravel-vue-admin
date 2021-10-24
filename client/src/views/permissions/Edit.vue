@@ -84,6 +84,23 @@
                 <i class="tw-text-xs tw-text-red-500">* Required</i>
               </v-col>
             </v-row>
+
+            <v-row>
+              <v-col cols="12" class="tw-flex tw-items-center tw-justify-center tw-gap-2">
+                <v-alert
+                  dense
+                  type="error"
+                  transition="scale-transition">
+                  Before saving please be aware of if you change the <b>name</b> or <b>display_name</b> fields it may cause break some features and you'll must to configure them manually.
+                </v-alert>
+                <v-alert
+                  dense
+                  type="info"
+                  transition="scale-transition">
+                  If something go wrong you can run <b>php artisan db:seed</b> command in <u>development</u>. Do not run this command in <u>production</u> since it may cause you to alter or lose data.
+                </v-alert>
+              </v-col>
+            </v-row>
           </v-container>
         </v-card-text>
         <v-card-actions>
