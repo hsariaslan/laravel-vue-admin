@@ -36,7 +36,8 @@
         ></v-checkbox>
       </v-card-text>
       <v-card-actions class="d-sm-flex justify-space-between">
-        <router-link to="/forget-password" class="float-left mt-3 ml-3 text-body-2">Forget password?</router-link>
+        <!-- <router-link to="/forget-password" class="float-left mt-3 ml-3 text-body-2">Forget password?</router-link> -->
+        <v-spacer></v-spacer>
         <v-btn
           color="primary"
           class="mr-2 mt-3 mb-2"
@@ -104,6 +105,7 @@
             this.$router.push(uri);
           })
           .catch(err => {
+            // console.log(err);
             this.error = {
               status: err.response.status,
               message: err.response.data.message

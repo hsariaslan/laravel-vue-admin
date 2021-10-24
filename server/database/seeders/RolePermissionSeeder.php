@@ -44,6 +44,7 @@ class RolePermissionSeeder extends Seeder
             'Show',
             'Update',
             'Delete',
+            'Login',
         ];
 
         foreach ($permissionActions as $permissionAction) {
@@ -63,6 +64,12 @@ class RolePermissionSeeder extends Seeder
 
         // Insert all permissions to database. Admin has all permissions
         $permissions = [
+            // dashboard permissions
+            [
+                'category_id' => 1,
+                'action_id' => 6,
+                'display_name' => 'Login To Panel',
+            ],
             // dashboard permissions
             [
                 'category_id' => 1,
@@ -230,6 +237,7 @@ class RolePermissionSeeder extends Seeder
         // Editor permissions
         $permissions = [
             // dashboard permissions
+            'Login To Panel',
             'Show Dashboard',
 
             // users permissions
@@ -262,6 +270,7 @@ class RolePermissionSeeder extends Seeder
         // Member permissions
         $permissions = [
             // dashboard permissions
+            'Login To Panel',
             'Show Dashboard',
             
             // users permissions

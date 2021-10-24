@@ -34,7 +34,21 @@ const auth = {
           })
           .then((response) => {
             let user = response.data.data;
-            let userStorageName = process.env.VUE_APP_STORAGE_NAME + '_user_';
+            const roles  = String(helpers.decrypt(user.roles)).split(',');
+            const permissions  = String(helpers.decrypt(user.permissions)).split(',');
+
+            if(!(roles.includes("admin")) && !(permissions.includes("login_to_panel"))) {
+              return Promise.reject({
+                response: {
+                  status: 403,
+                  data: {
+                    message: 'You are not authorized to login.',
+                  },
+                },
+              });
+            }
+
+            const userStorageName = process.env.VUE_APP_STORAGE_NAME + '_user_';
             
             if(credentials.rememberMe === true) {
               localStorage.setItem(userStorageName + 'username', user.username);
@@ -65,6 +79,7 @@ const auth = {
             }
 
             user = helpers.getUserDataFromStorage();
+
             // console.log(user);
             commit('login', user);
             resolve('/');
